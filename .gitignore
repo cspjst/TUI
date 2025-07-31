@@ -9,7 +9,9 @@ Makefile
 # Executables
 *.out
 *.bin
-*.exe# Ignore .DS_Store everywhere
+*.exe
+
+# Ignore .DS_Store everywhere
 .DS_Store
 **/.DS_Store
 
