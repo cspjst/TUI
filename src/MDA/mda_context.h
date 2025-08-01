@@ -1,7 +1,19 @@
 #ifndef MDA_CONTEXT_H
 #define MDA_CONTEXT_H
 
+#include mda_constants.h
+#include mda_types.h
 #include <stdbool.h>
+
+typedef struct {
+    char attributes;
+    mda_rect_t bounds;
+    uint8_t htab_size;
+    uint8_t vtab_size;
+    bios_video_state_t video_state;
+    bios_cursor_state_t cursor_state;
+    // TODO: mouse_state mouse; has mouse support etc
+} mda_context_t;
 
 void mda_plot(mda_rect_t* rect, uint8_t x, uint8_t y,  mda_char_attr_t chatt);
 
