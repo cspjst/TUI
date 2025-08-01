@@ -9,7 +9,7 @@ typedef union {
         char chr;
         char attr;
     } parts;
-} mda_char_attr_t;
+} mda_cell_t;
 
 typedef union {
   uint32_t packed;
