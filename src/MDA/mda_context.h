@@ -17,6 +17,8 @@ typedef struct {
 
 void mda_initialize_default_context(mda_context_t* ctx);
 
+void mda_set_bounds(mda_context_t* ctx, uint8_t x, uint8_t y, uint8_t w, uint8_t h);
+
 void mda_plot(mda_rect_t* rect, uint8_t x, uint8_t y,  mda_char_attr_t chatt);
 
 void mda_vline(mda_rect_t* rect, uint8_t x0, uint8_t y0, , uint8_t x1, uint8_t y1,  mda_char_attr_t chatt);
