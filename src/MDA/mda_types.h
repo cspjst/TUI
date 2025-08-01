@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 typedef union {
-    uint16_t char_attr;
+    uint16_t packed;
     struct {
         char chr;
         char attr;
