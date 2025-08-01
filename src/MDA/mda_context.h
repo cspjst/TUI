@@ -15,8 +15,6 @@ typedef struct {
     // TODO: mouse_state mouse; has mouse support etc
 } mda_context_t;
 
-void mda_set_context_frame(mda_context_t* ctx, uint8_t x, uint8_t y, uint8_t width, uint8_t height);
-
 void mda_initialize_default_context(mda_context_t* ctx);
 
 void mda_plot(mda_rect_t* rect, uint8_t x, uint8_t y,  mda_char_attr_t chatt);
