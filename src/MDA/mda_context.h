@@ -10,8 +10,8 @@ typedef struct {
     mda_rect_t bounds;
     uint8_t htab_size;
     uint8_t vtab_size;
-    bios_video_state_t video_state;
-    bios_cursor_state_t cursor_state;
+    bios_video_state_t video;
+    bios_cursor_state_t cursor;
     // TODO: mouse_state mouse; has mouse support etc
 } mda_context_t;
 
