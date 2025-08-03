@@ -8,8 +8,7 @@
 typedef union {
     uint16_t packed;
     struct {
-        char chr;
-        char attr;
+        char chr, attr;
     } parts;
 } mda_cell_t;
 

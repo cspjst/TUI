@@ -1,9 +1,10 @@
 #ifndef MDA_CONSTANTS_H
 #define MDA_CONSTANTS_H
 
-#define MDA_SEGMENT        0B000h
-#define MDA_COLUMNS        80
-#define MDA_ROWS           25
+#define MDA_SEGMENT         0B000h
+#define MDA_COLUMNS         80
+#define MDA_ROWS            25
+#define MDA_ROW_BYTES       160     // 80 coumns 2 bytes each (char and attribute)
 #define MDA_DEFAULT_HTAB    4
 #define MDA_DEFAULT_VTAB    2
 

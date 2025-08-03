@@ -32,39 +32,45 @@
 #include "mda_types.h"
 #include "../BIOS/bios_video_services.h"
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 
 typedef struct {
-    char attributes;
     mda_rect_t bounds;
+    char attributes;
     uint8_t htab_size;
     uint8_t vtab_size;
     bios_video_state_t video;
     bios_cursor_state_t cursor;
+    // TODO clip function here
     // TODO: mouse_state mouse; has mouse support etc
 } mda_context_t;
+
+// unbounded low level functions user must clip prior to calling
+
+void mda_plot(uint16_t point, uint16_t cell);
+
+void mda_hline(uint16_t p0, uint16_t p1,uint16_t cell);
+
+void mda_vline(uint16_t p0, uint16_t p1,uint16_t cell);
+
+void mda_draw_rect(mda_rect_t* box, mda_cell_t cell);
+
+void mda_draw_rect_fill(mda_rect_t* box, mda_cell_t cell);
+
+void mda_blit(mda_rect_t* rect_dst, mda_rect_t* rect_src);
+
+bool mda_contains(mda_rect_t* bounds, uint16_t point);
+
+bool mda_intersect(mda_rect_t* rect_a, mda_rect_t* rect_b);
+
+// context bounded functions
 
 void mda_initialize_default_context(mda_context_t* ctx);
 
 void mda_set_bounds(mda_context_t* ctx, uint8_t x, uint8_t y, uint8_t w, uint8_t h);
 
-void mda_plot(mda_rect_t* rect, uint16_t x, uint16_t y, uint16_t packed);
-
-void mda_vline(mda_rect_t* rect, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, mda_cell_t cell);
-
-void mda_hline(mda_rect_t* rect, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, mda_cell_t cell);
-
-void mda_draw_rect(mda_rect_t* rect, mda_rect_t* box, mda_cell_t cell);
-
-void mda_draw_rect_fill(mda_rect_t* rect, mda_rect_t* box, mda_cell_t cell);
-
-void mda_blit(mda_rect_t* rect_dst, mda_rect_t* rect_src);
-
-bool mda_contains(mda_rect_t* rect, uint8_t x, uint8_t y);
-
-bool mda_intersect(mda_rect_t* rect_a, mda_rect_t* rect_b);
-
-void mda_cursor_to(mda_context_t* ctx, uint8_t x, uint8_t y);
+void mda_cursor_to(mda_context_t* ctx, mda_point_t p);
 
 void mda_cursor_advance(mda_context_t* ctx);
 

@@ -8,10 +8,7 @@
 typedef union {
     uint32_t packed;
     struct {
-        uint8_t x;
-        uint8_t y;
-        uint8_t w;
-        uint8_t h;
+        uint8_t x, y, w, h;
     } rect;
 } mda_rect_t;
 
