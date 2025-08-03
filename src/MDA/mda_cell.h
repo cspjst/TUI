@@ -33,7 +33,7 @@ static inline void mda_init_cell(mda_cell_t* cell, char chr, uint8_t attr) {
     cell->parts.attr = attr;
 }
 
-static inline mda_cell_t mda_make_cell(char chr, uint8_t attr) {
+static inline mda_cell_t mda_cell_make(char chr, uint8_t attr) {
     mda_cell_t c;
     mda_init_cell(&c, chr, attr);
     return c;

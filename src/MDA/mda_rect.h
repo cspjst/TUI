@@ -1,6 +1,7 @@
 #ifndef MDA_RECT_H
 #define MDA_RECT_H
 
+#include "mda_point.h"
 #include "../CONTRACT/contract.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -8,8 +9,11 @@
 typedef union {
     uint32_t packed;
     struct {
-        uint8_t x, y, w, h;
+        uint8_t y, x, h, w;
     } rect;
+    struct {
+        uint16_t a, b;
+    } point;
 } mda_rect_t;
 
 static inline void mda_rect_init(mda_rect_t* r, uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
@@ -26,10 +30,14 @@ static inline mda_rect_t mda_make_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t 
     return r;
 }
 
-bool mda_rect_contains(const mda_rect_t* r, uint8_t x, uint8_t y);
+mda_rect_t mda_make_rect_from_points(mda_point_t top_left, mda_point_t bottom_right);
+
+bool mda_rect_contains_point(const mda_rect_t* r, mda_point_t p);
 
 bool mda_rect_intersect(const mda_rect_t* a, const mda_rect_t* b);
 
-mda_rect_t mda_rect_intersection(const mda_rect_t* a, const mda_rect_t* b);
+mda_rect_t mda_rect_make_intersection(const mda_rect_t* a, const mda_rect_t* b);
+
+void mda_rect_clip(mda_rect_t* rect, const mda_rect_t* bounds);
 
 #endif

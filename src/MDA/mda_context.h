@@ -8,22 +8,6 @@
  * @details
  * This module provides the core context structure and initialization routines
  * for MDA text-mode operations on IBM PC/XT/AT and compatible systems.
- *
- * The mda_context_t encapsulates:
- * - Current text bounds and clipping region
- * - Character attributes (intensity, blink, etc.)
- * - Tab settings (horizontal and vertical)
- * - BIOS video and cursor state
- *
- * All rendering and cursor operations are performed relative to the active context.
- * Functions in this module enforce design-by-contract using require_address().
- *
- * Example usage:
- * @code
- * mda_context_t ctx;
- * mda_initialize_default_context(&ctx);
- * mda_plot(&ctx.bounds, 40, 12, mda_make_cell('X', ctx.attributes).packed);
- * @endcode
  */
 #ifndef MDA_CONTEXT_H
 #define MDA_CONTEXT_H
@@ -50,29 +34,15 @@ typedef struct {
 
 void mda_plot(uint16_t point, uint16_t cell);
 
-void mda_hline(uint16_t p0, uint16_t p1,uint16_t cell);
+void mda_hline(uint16_t p0, uint16_t p1, uint16_t cell);
 
-void mda_vline(uint16_t p0, uint16_t p1,uint16_t cell);
+void mda_vline(uint16_t p0, uint16_t p1, uint16_t cell);
 
-void mda_hcaps(uint16_t p0, uint16_t p1,uint16_t cap);
+void mda_draw_rect(uint16_t top_left, uint16_t bottom_right, uint16_t cell);
 
-void mda_vcaps(uint16_t p0, uint16_t p1,uint16_t cap);
+void mda_fill_rect(uint16_t top_left, uint16_t bottom_right, uint16_t cell);
 
-void mda_hline_capped(uint16_t p0, uint16_t p1,uint16_t cap, uint16_t fill);
-
-void mda_vline_capped(uint16_t p0, uint16_t p1,uint16_t cap, uint16_t fill);
-
-void mda_draw_border(mda_rect_t* rect, mda_cell_t cell);
-
-void mda_draw_rect(mda_rect_t* rect, mda_cell_t cell);
-
-void mda_draw_rect_fill(mda_rect_t* rect, mda_cell_t cell);
-
-void mda_blit(mda_rect_t* rect_dst, mda_rect_t* rect_src);
-
-bool mda_contains(mda_rect_t* bounds, uint16_t point);
-
-bool mda_intersect(mda_rect_t* rect_a, mda_rect_t* rect_b);
+void mda_blit(uint16_t* to, uint16_t* from, uint16_t dim);
 
 // context bounded functions
 
@@ -106,6 +76,12 @@ void mda_write_CRLF(mda_context_t* ctx);
 
 void mda_write_char(mda_context_t* ctx, char chr);
 
-void mda_dump(FILE* stream, mda_context_t* ctx);
+void mda_scroll_up(mda_context_t* ctx);
+
+void mda_scroll_down(mda_context_t* ctx);
+
+void mda_scroll_left(mda_context_t* ctx);
+
+void mda_scroll_right(mda_context_t* ctx);
 
 #endif
