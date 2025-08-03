@@ -1,7 +1,7 @@
 Open Watcom Linker Version 2.0 beta Nov 23 2024 15:34:21
 Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       25/08/03 16:05:24
+Created on:       25/08/03 16:07:32
 Executable Image: TUI.exe
 creating a DOS executable
 
@@ -29,7 +29,7 @@ bios_timer_io_services_TEXT CODE      AUTO           0000:0035       00000095
 bios_video_services_TEXT CODE         AUTO           0000:00ca       0000031e
 mda_context_TEXT       CODE           AUTO           0000:03e8       0000081b
 mda_rect_TEXT          CODE           AUTO           0000:0c03       00000758
-main_TEXT              CODE           AUTO           0000:135b       00000405
+main_TEXT              CODE           AUTO           0000:135b       00000403
 _TEXT                  CODE           AUTO           0000:1760       00004867
 FAR_DATA               FAR_DATA       AUTO           05fc:0007       00000000
 _NULL                  BEGDATA        DGROUP         05fd:0000       00000020
@@ -381,4 +381,4 @@ Module: /opt/watcom/lib286/dos/clibl.lib(clearenv)
 Stack size:  0800 (2048.)
 Memory size:  9630 (38448.)
 Entry point address: 0000:2064
-Link time: 00:00.48
+Link time: 00:00.28

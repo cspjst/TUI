@@ -54,9 +54,19 @@ void mda_hline(uint16_t p0, uint16_t p1,uint16_t cell);
 
 void mda_vline(uint16_t p0, uint16_t p1,uint16_t cell);
 
-void mda_draw_rect(mda_rect_t* box, mda_cell_t cell);
+void mda_hcaps(uint16_t p0, uint16_t p1,uint16_t cap);
 
-void mda_draw_rect_fill(mda_rect_t* box, mda_cell_t cell);
+void mda_vcaps(uint16_t p0, uint16_t p1,uint16_t cap);
+
+void mda_hline_capped(uint16_t p0, uint16_t p1,uint16_t cap, uint16_t fill);
+
+void mda_vline_capped(uint16_t p0, uint16_t p1,uint16_t cap, uint16_t fill);
+
+void mda_draw_border(mda_rect_t* rect, mda_cell_t cell);
+
+void mda_draw_rect(mda_rect_t* rect, mda_cell_t cell);
+
+void mda_draw_rect_fill(mda_rect_t* rect, mda_cell_t cell);
 
 void mda_blit(mda_rect_t* rect_dst, mda_rect_t* rect_src);
 

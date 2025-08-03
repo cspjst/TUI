@@ -19,7 +19,7 @@ int main() {
 
     for(int i = 0; i < 20; ++i) {
         mda_vline(p0.packed,p1.packed, cell.packed);
-        p0.pos.x++;
+        p0.pos.x += 2;
         p1.pos.y++;
     }
 

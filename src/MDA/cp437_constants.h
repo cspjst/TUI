@@ -112,7 +112,7 @@ typedef enum {
     CP437_INVERTED_EXCLAMATION   = 0xAD,  // ¡
     CP437_LEFT_DOUBLE_ANGLE      = 0xAE,  // «
     CP437_RIGHT_DOUBLE_ANGLE     = 0xAF,  // »
-   
+
     // =============================================
     // Extended CP437: Box Drawing (0xB0-0xDF)
     // =============================================
@@ -133,7 +133,7 @@ typedef enum {
     CP437_BOX_UP_SGL_LEFT_DBL    = 0xBE,  // ╛
     CP437_BOX_DOWN_LEFT          = 0xBF,  // ┐
 
-    
+
     CP437_BOX_UP_RIGHT           = 0xC0,  // └
     CP437_BOX_UP_HORIZONTAL      = 0xC1,  // ┴
     CP437_BOX_DOWN_HORIZONTAL    = 0xC2,  // ┬
@@ -204,4 +204,4 @@ typedef enum {
     CP437_NO_BREAK_SPACE         = 0xFF   // (Non-breaking space)
 } CP437_Char;
 
-#endif // CP437_CONSTANTS_H
+#endif
