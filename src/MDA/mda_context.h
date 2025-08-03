@@ -1,8 +1,9 @@
-l#ifndef MDA_CONTEXT_H
+#ifndef MDA_CONTEXT_H
 #define MDA_CONTEXT_H
 
-#include mda_constants.h
-#include mda_types.h
+#include "mda_constants.h"
+#include "mda_types.h"
+#include "../BIOS/bios_video_services.h"
 #include <stdbool.h>
 
 typedef struct {
@@ -21,19 +22,19 @@ void mda_set_bounds(mda_context_t* ctx, uint8_t x, uint8_t y, uint8_t w, uint8_t
 
 void mda_plot(mda_rect_t* rect, uint8_t x, uint8_t y, mda_cell_t cell);
 
-void mda_vline(mda_rect_t* rect, uint8_t x0, uint8_t y0, , uint8_t x1, uint8_t y1, mda_cell_t cell);
+void mda_vline(mda_rect_t* rect, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, mda_cell_t cell);
 
-void mda_hline(mda_rect_t* rect, uint8_t x0, uint8_t y0, , uint8_t x1, uint8_t y1, mda_cell_t cell);
+void mda_hline(mda_rect_t* rect, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, mda_cell_t cell);
 
-void mda_box(mda_rect_t* rect, mda_rect_t* box, ,mda_cell_t cell);
+void mda_box(mda_rect_t* rect, mda_rect_t* box, mda_cell_t cell);
 
-void mda_box_fill(mda_rect_t* rect, mda_rect_t* box, ,mda_cell_t cell);
+void mda_box_fill(mda_rect_t* rect, mda_rect_t* box, mda_cell_t cell);
 
-void mda_blit(mda_rect_t* rect_dst, mda_rect* rect_src);
+void mda_blit(mda_rect_t* rect_dst, mda_rect_t* rect_src);
 
 bool mda_contains(mda_rect_t* rect, uint8_t x, uint8_t y);
 
-bool mda_intersect(mda_rect_t* rect_a, mda_rect* rect_b);
+bool mda_intersect(mda_rect_t* rect_a, mda_rect_t* rect_b);
 
 void mda_cursor_to(mda_context_t* ctx, uint8_t x, uint8_t y);
 
