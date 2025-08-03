@@ -12,7 +12,7 @@ typedef union {
         uint8_t y, x, h, w;
     } rect;
     struct {
-        uint16_t a, b;
+        uint16_t origin, dimensions;
     } point;
 } mda_rect_t;
 
@@ -24,13 +24,7 @@ static inline void mda_rect_init(mda_rect_t* r, uint8_t x, uint8_t y, uint8_t w,
     r->rect.h = h;
 }
 
-static inline mda_rect_t mda_make_rect(uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
-    mda_rect_t r;
-    mda_rect_init(&r, x, y, w, h);
-    return r;
-}
-
-mda_rect_t mda_make_rect_from_points(mda_point_t top_left, mda_point_t bottom_right);
+mda_rect_t mda_rect_make(mda_point_t origin, mda_dim_t dim);
 
 bool mda_rect_contains_point(const mda_rect_t* r, mda_point_t p);
 

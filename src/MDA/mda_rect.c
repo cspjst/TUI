@@ -1,9 +1,9 @@
 #include "mda_rect.h"
 
-mda_rect_t mda_make_rect_from_points(mda_point_t top_left, mda_point_t bottom_right) {
-    require_range(top_left.pos.x < bottom_right.pos.x && top_left.pos.y < bottom_right.pos.y, "CORNERS out of range!");
+mda_rect_t mda_rect_make(mda_point_t origin, mda_point_t dim) {
+    require_range(origin.pos.x < dim.pos.x && origin.pos.y < dim.pos.y, "CORNERS out of range!");
     mda_rect_t r;
-    mda_rect_init(&r, top_left.pos.x, top_left.pos.y, bottom_right.pos.x - top_left.pos.x, bottom_right.pos.y - top_left.pos.y);
+    mda_rect_init(&r, origin.pos.x, origin.pos.y, dim.pos.x - origin.pos.x, dim.pos.y - origin.pos.y);
     return r;
 }
 
@@ -34,8 +34,9 @@ mda_rect_t mda_rect_make_intersection(const mda_rect_t* a, const mda_rect_t* b) 
     uint8_t top    = (a->rect.y > b->rect.y) ? a->rect.y : b->rect.y;
     uint8_t bottom = (a->rect.y + a->rect.h < b->rect.y + b->rect.h) ? a->rect.y + a->rect.h : b->rect.y + b->rect.h;
 
-    if (left >= right || top >= bottom)
-        return mda_make_rect(0, 0, 0, 0);
+    if (left >= right || top >= bottom) {
+        return mda_make_rect(mda_point_make(0, 0), mda_point_make(0, 0));
+    }
 
     return mda_make_rect(left, top, right - left, bottom - top);
 }
