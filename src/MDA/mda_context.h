@@ -1,7 +1,7 @@
 /**
  * @file mda_context.h
  * @brief MDA (Monochrome Display Adapter) context management API
- * @version 0.1.1
+ * @version 0.1.2
  * @license MIT
  * @author Jeremy Thornton
  *
