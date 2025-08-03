@@ -5,6 +5,7 @@ Makefile
 *.a
 *.so
 *.dylib
+*.map
 
 # Executables
 *.out
@@ -16,8 +17,8 @@ Makefile
 **/.DS_Store
 
 # Ignore all shell scripts
-*.sh
-**/*.sh
+#*.sh
+#**/*.sh
 
 # ignore CMake detritus
 CMakeLists.txt.user
