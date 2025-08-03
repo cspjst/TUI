@@ -43,7 +43,9 @@ endif()
 file(GLOB SOURCES
     CONFIGURE_DEPENDS
     *.c
-    # project folders...
+    BIOS/*.c
+    CONTRACT/*.c
+    MDA/*.c
 )
 
 # message(Source list="${SOURCES}")
