@@ -11,9 +11,6 @@ typedef union {
     struct {
         uint8_t y, x, h, w;
     } rect;
-    struct {
-        uint16_t origin, dimensions;
-    } point;
 } mda_rect_t;
 
 static inline void mda_rect_init(mda_rect_t* r, uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
