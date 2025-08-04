@@ -131,19 +131,22 @@ NEXT:   mov es:[di], ax
 }
 
 void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
+    uint8_t a,b,c,d;
+    a = b = c = d = 0;
     __asm {
         .8086
         // 1. register setup
         mov ax, MDA_SEGMENT
         mov es, ax          ; ES:DI *VRAM
         lds si, rect        ; DS:SI *rect
-
+load up x,y,w,h into a,b,c,d and printout
 
         // 4. draw top line
+/*
         mov dx, di           ; DX copy top left corner VRAM
         mov bx, cx           ; BX copy of width
         rep stosw            ; top line
-        // 5. draw lhs rhs vertical lines
+        5. draw lhs rhs vertical lines
         mov di, dx           ; restore top left corner 
         add di, MDA_ROW_BYTES    ; next line 
         mov cx, (height)     ; CX = height
@@ -151,8 +154,10 @@ NEXT:   mov es:[di], ax      ; lhs cell
         mov es:[di + bx], ax ; rhs cell
         add di, MDA_ROW_BYTES    ; next line 
         loop NEXT
-        // 6. draw bottom line
+        6. draw bottom line
         mov cx, bx           ; CX = width 
         rep stosw            ; bottom line
+*/
     }
+    printf("%i,%i,%i,%i\n",a,b,c,d);
 }
