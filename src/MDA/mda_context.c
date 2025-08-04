@@ -130,5 +130,13 @@ NEXT:   mov es:[di], ax
 }
 
 void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
+    __asm {
+        .8086
+        // 1. register setup
+        mov ax, MDA_SEGMENT
+        mov es, ax          ; ES:DI *VRAM
+        lds si, rect        ; DS:SI *rect
 
+
+    }
 }
