@@ -25,14 +25,14 @@ void mda_plot(mda_point_t* point, mda_cell_t* cell) {
         .8086
         // 1. register setup
         mov ax, MDA_SEGMENT
-        mov es, ax
-        lds si, point
-        lodsb
+        mov es, ax      ; ES:DI *VRAM
+        lds si, point   ; DS:SI *point
+        lodsb           ; AL = x
         mov bl, al      ; BL = x
         sub bh, bh      ; BX = x
         lodsb           ; AL = y
         sub ah, ah      ; AX = y
-        mov di, ax
+        mov di, ax      ; DI copy y
         // 2. DI = y * 80
         shl  ax, 1       ; y * 4
         shl  ax, 1
@@ -43,32 +43,33 @@ void mda_plot(mda_point_t* point, mda_cell_t* cell) {
         shl  ax, 1
         add  ax, bx      ; ax = y*80 + x
         shl  ax, 1       ; word offset
-        mov  di, ax
-        lds  si, cell
-        cld
-        movsw
+        mov  di, ax      ; ES:DI *VRAM (x,y)
+        lds  si, cell    ; DS:SI *cell
+        //cld            ; direction flag irrelevant single MOV
+        movsw            ; *VRAM = *cell
     }
 }
 
-void mda_hline((mda_point_t* p0, mda_point_t*, mda_cell_t* cell) {
+void mda_hline((mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
         mov ax, MDA_SEGMENT
-        mov es, ax
-        mov ax, p0
-        mov bl, ah      ; BL = p0.x
-        sub bh, bh      ; BX = p0.x
-        sub ah, ah      ; AX = p0.y
-        mov di, ax
-        mov cx, p1
-        xchg cl, ch     ; CL = p1.x
-        sub ch, ch      ; CX = p1.x
-        cmp cl, bl
+        mov es, ax          ; ES:DI *VRAM
+        lds si, p0          ; DS:SI *p0
+        mov bl, ds:[di]     ; BL = p0.x
+        sub bh, bh          ; BX = p0.x
+        mov al, ds:[di+1]   ; AL = p0.y
+        sub ah, ah          ; AX = p0.y
+        mov di, ax          ; DI copy p0.y
+        lds si, p0          ; DS:SI *p0
+        mov cl, ds:[di+1]   ; CL = p1.y
+        sub ch, ch          ; CX = p1.y
+        cmp cl, bl          ; y1 > y0 ?
         jg OK
-        xchg cl, bl
-OK:     sub cl, bl
-        inc cl
+        xchg cl, bl         ; swap y1 y0
+OK:     sub cl, bl          ; CL = distance y0..y1
+        inc cl              ; CL = line width
         // 2. DI = y * 80
         shl  ax, 1       ; y * 4
         shl  ax, 1
@@ -80,13 +81,14 @@ OK:     sub cl, bl
         add  ax, bx      ; ax = y*80 + x
         shl  ax, 1       ; word offset
         mov  di, ax
-        mov  ax, cell
-        cld
-        rep stosw
+        lds  si, cell    ; DS:SI *cell
+        lodsw            ; AX = cell
+        cld              ; increment
+        rep stosw        ; 
     }
 }
 
-void mda_vline((mda_point_t* p0, mda_point_t*, mda_cell_t* cell) {
+void mda_vline((mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
