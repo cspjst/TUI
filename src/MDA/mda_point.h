@@ -13,7 +13,7 @@ typedef union {
 } mda_point_t;
 
 static inline void mda_point_init(mda_point_t* p, uint8_t x, uint8_t y) {
-    require_address(p, "NULL point!");
+    require_address(p, "NULL point! ");
     p->pos.x = x;
     p->pos.y = y;
 }
