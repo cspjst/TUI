@@ -32,17 +32,17 @@ typedef struct {
 
 // unbounded low level functions user must clip prior to calling
 
-void mda_plot(uint16_t point, uint16_t cell);
+void mda_plot(mda_point_t* point, mda_cell_t cell);
 
-void mda_hline(uint16_t p0, uint16_t p1, uint16_t cell);
+void mda_hline((mda_point_t* p0, mda_point_t*, mda_cell_t* cell);
 
-void mda_vline(uint16_t p0, uint16_t p1, uint16_t cell);
+void mda_vline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell);
 
-void mda_draw_rect(uint16_t top_left, uint16_t bottom_right, uint16_t cell);
+void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell);
 
-void mda_fill_rect(uint16_t top_left, uint16_t bottom_right, uint16_t cell);
+void mda_fill_rect(mda_rect_t* rect, mda_cell_t cell);
 
-void mda_blit(uint16_t* to, uint16_t* from, uint16_t dim);
+void mda_blit(mda_rect_t* to, mda_rect_t* from);
 
 // context bounded functions
 
@@ -50,7 +50,7 @@ void mda_initialize_default_context(mda_context_t* ctx);
 
 void mda_set_bounds(mda_context_t* ctx, uint8_t x, uint8_t y, uint8_t w, uint8_t h);
 
-void mda_cursor_to(mda_context_t* ctx, mda_point_t p);
+void mda_cursor_to(mda_context_t* ctx, mda_point_t* p);
 
 void mda_cursor_advance(mda_context_t* ctx);
 
