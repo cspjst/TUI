@@ -20,15 +20,17 @@ void mda_initialize_default_context(mda_context_t* ctx) {
     ctx->vtab_size = MDA_DEFAULT_VTAB;
 }
 
-void mda_plot(uint16_t point, uint16_t cell) {
+void mda_plot(mda_point_t* point, mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
         mov ax, MDA_SEGMENT
         mov es, ax
-        mov ax, point
-        mov bl, ah      ; BL = x
+        lds si, point
+        lodsb
+        mov bl, al      ; BL = x
         sub bh, bh      ; BX = x
+        lodsb           ; AL = y
         sub ah, ah      ; AX = y
         mov di, ax
         // 2. DI = y * 80
@@ -42,13 +44,13 @@ void mda_plot(uint16_t point, uint16_t cell) {
         add  ax, bx      ; ax = y*80 + x
         shl  ax, 1       ; word offset
         mov  di, ax
-        mov  ax, cell
+        lds  si, cell
         cld
-        stosw
+        movsw
     }
 }
 
-void mda_hline(uint16_t p0, uint16_t p1,uint16_t cell) {
+void mda_hline((mda_point_t* p0, mda_point_t*, mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
@@ -84,7 +86,7 @@ OK:     sub cl, bl
     }
 }
 
-void mda_vline(uint16_t p0, uint16_t p1,uint16_t cell) {
+void mda_vline((mda_point_t* p0, mda_point_t*, mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
@@ -123,6 +125,6 @@ NEXT:   mov es:[di], ax
     }
 }
 
-void mda_draw_rect(uint16_t top_left, uint16_t bottom_right, uint16_t cell) {
+void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
 
 }
