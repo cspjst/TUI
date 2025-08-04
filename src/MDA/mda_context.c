@@ -83,7 +83,8 @@ OK:     sub cl, al          ; CL = distance x0..x1
         lds  si, cell    ; DS:SI *cell
         lodsw            ; AX = cell
         cld              ; increment
-        rep stosw        ; 
+        // 4. horizontal plots
+        rep stosw        
     }
 }
 
@@ -122,7 +123,7 @@ OK:     sub cl, bl          ; CL = distance y0..y1
         mov  di, ax
         lds  si, cell    ; DS:SI *cell
         lodsw            ; AX = cell
-        // 3. vertical plots
+        // 4. vertical plots
 NEXT:   mov es:[di], ax
         add di, dx       ; add reg, reg is faster than add reg, imm 
         loop NEXT
@@ -138,5 +139,20 @@ void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
         lds si, rect        ; DS:SI *rect
 
 
+        // 4. draw top line
+        mov dx, di           ; DX copy top left corner VRAM
+        mov bx, cx           ; BX copy of width
+        rep stosw            ; top line
+        // 5. draw lhs rhs vertical lines
+        mov di, dx           ; restore top left corner 
+        add di, MDA_ROW_BYTES    ; next line 
+        mov cx, (height)     ; CX = height
+NEXT:   mov es:[di], ax      ; lhs cell 
+        mov es:[di + bx], ax ; rhs cell
+        add di, MDA_ROW_BYTES    ; next line 
+        loop NEXT
+        // 6. draw bottom line
+        mov cx, bx           ; CX = width 
+        rep stosw            ; bottom line
     }
 }
