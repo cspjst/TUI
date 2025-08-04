@@ -5,7 +5,7 @@
 #include "MDA/mda_point.h"
 
 int main() {
-    printf(" TUI - mda_cell_t Interface Exercise\n");
+    printf("TUI - mda_cell_t Interface Exercise\n");
 
     mda_context_t ctx;
     mda_initialize_default_context(&ctx);
