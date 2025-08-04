@@ -32,7 +32,7 @@ typedef struct {
 
 // unbounded low level functions user must clip prior to calling
 
-void mda_plot(mda_point_t* point, mda_cell_t cell);
+void mda_plot(mda_point_t* point, mda_cell_t* cell);
 
 void mda_hline((mda_point_t* p0, mda_point_t*, mda_cell_t* cell);
 
@@ -40,7 +40,7 @@ void mda_vline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell);
 
 void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell);
 
-void mda_fill_rect(mda_rect_t* rect, mda_cell_t cell);
+void mda_fill_rect(mda_rect_t* rect, mda_cell_t* cell);
 
 void mda_blit(mda_rect_t* to, mda_rect_t* from);
 
