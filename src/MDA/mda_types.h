@@ -2,6 +2,7 @@
 #define MDA_TYPES_H
 
 #include "mda_point.h"
+#include "mda_dim.h"
 #include "mda_cell.h"
 #include "mda_rect.h"
 

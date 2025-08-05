@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "MDA/mda_context.h"
-#include "MDA/demo_tui.h
+#include "MDA/demo_tui.h"
 
 int main() {
     printf("DEMO - Text User Interface (TUI)\n");

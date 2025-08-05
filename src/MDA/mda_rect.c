@@ -1,18 +1,11 @@
 #include "mda_rect.h"
 
-mda_rect_t mda_rect_make(mda_point_t origin, mda_point_t dim) {
-    require_range(origin.pos.x < dim.pos.x && origin.pos.y < dim.pos.y, "CORNERS out of range!");
-    mda_rect_t r;
-    mda_rect_init(&r, origin.pos.x, origin.pos.y, dim.pos.x - origin.pos.x, dim.pos.y - origin.pos.y);
-    return r;
-}
-
-bool mda_rect_contains_point(const mda_rect_t* r, mda_point_t p) {
+bool mda_rect_contains_point(const mda_rect_t* r, mda_point_t* p) {
     require_address(r, "NULL rectangle!");
-    return p.pos.x >= r->rect.x &&
-           p.pos.y >= r->rect.y &&
-           p.pos.x <  r->rect.x + r->rect.w &&
-           p.pos.y <  r->rect.y + r->rect.h;
+    return p->pos.x >= r->rect.x &&
+           p->pos.y >= r->rect.y &&
+           p->pos.x <  r->rect.x + r->rect.w &&
+           p->pos.y <  r->rect.y + r->rect.h;
 }
 
 bool mda_rect_intersect(const mda_rect_t* a, const mda_rect_t* b) {
@@ -35,8 +28,9 @@ mda_rect_t mda_rect_make_intersection(const mda_rect_t* a, const mda_rect_t* b) 
     uint8_t bottom = (a->rect.y + a->rect.h < b->rect.y + b->rect.h) ? a->rect.y + a->rect.h : b->rect.y + b->rect.h;
 
     if (left >= right || top >= bottom) {
-        return mda_make_rect(mda_point_make(0, 0), mda_point_make(0, 0));
+        mda_rect_init(&r, uint8_t x, uint8_t y, uint8_t w, uint8_t h)
+        return r;
     }
 
-    return mda_make_rect(left, top, right - left, bottom - top);
+    return mda_rect_make(left, top, right - left, bottom - top);
 }
