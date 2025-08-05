@@ -147,12 +147,12 @@ void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
         shl  di, 1
         add  di, ax         ; ax = y*80 + x
         shl  di, 1          ; word offset ES:DI *VRAM (x,y)
-        // 3. preserve origin and width
         lds si, cell        ; DS:SI *cell
         lodsw               ; AX = char:attribute pair
+        // 3. preserve origin and width
         mov si, di          ; SI copy top left corner VRAM
-        // 4. build BX into rhs vertical offset
         push cx             ; copy of width
+        // 4. build BX into rhs vertical offset
         mov bx, cx          ; BX = width
         dec bx              ; BX = width-1
         shl bx, 1           ; BX = (width-1)*2
