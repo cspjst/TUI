@@ -5,8 +5,8 @@ void demo_plot(mda_context_t* ctx) {
   mda_cell_t cell = mda_cell_make('*', ctx.attributes);
   mda_point_t p0 = mda_point_make(5, 2);
   mda_point_t p1 = mda_point_make(20, 10);
-  print_point(p0);
-  print_point(p1);
+  printf("(%i, %i)", p0.pos.x, p0.pos.y);
+  printf("(%i, %i)", p1.pos.x, p1.pos.y);
   mda_plot(p0, cell);
   mda_plot(p1, cell);
 }
@@ -72,6 +72,14 @@ void demo_attr(mda_context_t ctx) {
   mda_cell_set_attr(&cell, MDA_BOLD | MDA_BLINK);
   p.pos.x++;
   mda_plot(p, cell);
+}
+
+void demo_draw_rect(mda_context_t ctx) {
+  mda_rect_t r = mda_rect_make(1, 2, 3, 4);
+  mda_cell_t cell = mda_cell_make('*', ctx.attributes);
+
+  printf("(x=%i, y=%i, w=%i, h=i%\n)\n", r.rect.x, r.rect.y, r.rect.w, r.rect.h,);
+  mda_draw_rect(&r, &cell);
 }
 
 #endif
