@@ -28,8 +28,4 @@ static inline mda_point_t mda_point_add(mda_point_t a, mda_point_t b) {
     return mda_point_make(a.pos.x + b.pos.x, a.pos.y + b.pos.y);
 }
 
-static inline void print_point(mda_point_t p) {
-    printf("(%i, %i)", p.pos.x, p.pos.y);
-}
-
 #endif
