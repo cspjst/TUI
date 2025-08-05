@@ -9,28 +9,28 @@ typedef union {
     uint16_t packed;
     struct {
         char chr, attr;
-    } parts;
+    };
 } mda_cell_t;
 
 static inline void mda_cell_set_attr(mda_cell_t* cell, uint8_t attr) {
     require_address(cell, "NULL cell!");
-    cell->parts.attr = attr;
+    cell->attr = attr;
 }
 
 static inline void mda_cell_or_attr(mda_cell_t* cell, uint8_t attr) {
     require_address(cell, "NULL cell!");
-    cell->parts.attr |= attr;
+    cell->attr |= attr;
 }
 
 static inline void mda_cell_set_char(mda_cell_t* cell, char chr) {
     require_address(cell, "NULL cell!");
-    cell->parts.chr = chr;
+    cell->chr = chr;
 }
 
 static inline void mda_init_cell(mda_cell_t* cell, char chr, uint8_t attr) {
     require_address(cell, "NULL cell!");
-    cell->parts.chr = chr;
-    cell->parts.attr = attr;
+    cell->chr = chr;
+    cell->attr = attr;
 }
 
 static inline mda_cell_t mda_cell_make(char chr, uint8_t attr) {
@@ -41,7 +41,7 @@ static inline mda_cell_t mda_cell_make(char chr, uint8_t attr) {
 
 static inline void mda_cell_underline(mda_cell_t* cell) {
     require_address(cell, "NULL cell!");
-    cell->parts.attr = (cell->parts.attr & 0xF8) | MDA_UNDERLINE; // Ensure only bit 0-2 + underline
+    cell->attr = (cell->attr & 0xF8) | MDA_UNDERLINE; // Ensure only bit 0-2 + underline
 }
 
 static inline void mda_cell_bold(mda_cell_t* cell) {

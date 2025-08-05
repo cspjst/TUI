@@ -1,12 +1,12 @@
 #include "mda_context.h"
 #include "mda_attributes.h"
+#include "mda_rect.h"
 #include "../CONTRACT/contract.h"
 #include "../BIOS/bios_video_services.h"
-//#include "mda_types.h"
 
 void mda_set_bounds(mda_context_t* ctx, uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
     require_address(ctx, "NULL context!");
-    ctx->bounds = mda_make_rect(x, y, w, h);
+    ctx->bounds = mda_rect_make(x, y, w, h);
 }
 
 void mda_initialize_default_context(mda_context_t* ctx) {
@@ -27,9 +27,9 @@ void mda_plot(mda_point_t* point, mda_cell_t* cell) {
         mov ax, MDA_SEGMENT
         mov es, ax          ; ES:DI *VRAM
         lds si, point       ; DS:SI *point
-        mov bl, ds:[di]     ; BL = x
+        mov bl, ds:[si]     ; BL = x
         sub bh, bh          ; BX = x
-         mov al, ds:[di+1]  ; AL = y
+         mov al, ds:[si+1]  ; AL = y
         sub ah, ah          ; AX = y
         mov di, ax          ; DI copy y
         // 2. DI = y * 80
@@ -48,28 +48,24 @@ void mda_plot(mda_point_t* point, mda_cell_t* cell) {
     }
 }
 
-void mda_hline((mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
+void mda_hline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
         mov ax, MDA_SEGMENT
         mov es, ax          ; ES:DI *VRAM
         lds si, p0          ; DS:SI *p0
-        mov bl, ds:[di]     ; BL = p0.x
+        mov bl, ds:[si]     ; BL = p0.x
         sub bh, bh          ; BX = p0.x
-        mov al, ds:[di+1]   ; AL = p0.y
+        mov al, ds:[si+1]   ; AL = p0.y
         sub ah, ah          ; AX = p0.y
         mov di, ax          ; DI copy p0.y
         lds si, p1          ; DS:SI *p1
-        mov cl, ds:[di]     ; CL = p1.x
-        sub ch, ch          ; CX = p1.x
-        // 2. check valid points
-        cmp cl, al          ; x1 > x0 ?
-        jg OK
-        xchg cl, al         ; swap y1 y0
-OK:     sub cl, al          ; CL = distance x0..x1
-        inc cl              ; CL = line width
-        // 3. DI = y * 80
+        mov cl, ds:[si]     ; CL = p1.x
+        sub cl, bl          ; CL = p1.x - p0.x
+        inc cl              ; CL = distance x0..x1 + 1
+        sub ch, ch          ; CX = width
+        // 2. DI = y * 80
         shl  ax, 1       ; y * 4
         shl  ax, 1
         add  ax, di      ; y * 5
@@ -83,34 +79,30 @@ OK:     sub cl, al          ; CL = distance x0..x1
         lds  si, cell    ; DS:SI *cell
         lodsw            ; AX = cell
         cld              ; increment
-        // 4. horizontal plots
-        rep stosw        
+        // 3. horizontal plots
+        rep stosw
     }
 }
 
-void mda_vline((mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
+void mda_vline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
         mov ax, MDA_SEGMENT
         mov es, ax          ; ES:DI *VRAM
         lds si, p0          ; DS:SI *p0
-        mov bl, ds:[di]     ; BL = p0.x
+        mov bl, ds:[si]     ; BL = p0.x
         sub bh, bh          ; BX = p0.x
-        mov al, ds:[di+1]   ; AL = p0.y
+        mov al, ds:[si+1]   ; AL = p0.y
         sub ah, ah          ; AX = p0.y
         mov di, ax          ; DI copy p0.y
         lds si, p1          ; DS:SI *p1
-        mov cl, ds:[di+1]   ; CL = p1.y
-        sub ch, ch          ; CX = p1.y
+        mov cl, ds:[si+1]   ; CL = p1.y
+        sub cl, al          ; CL = p1.y - p0.y
+        inc cl              ; CL = distance y0..y1 + 1
+        sub ch, ch          ; CX = height
         mov dx, MDA_ROW_BYTES ; DX = 160
-        // 2. check valid points
-        cmp cl, bl          ; y1 > y0 ?
-        jg OK
-        xchg cl, bl         ; swap y1 y0
-OK:     sub cl, bl          ; CL = distance y0..y1
-        inc cl              ; CL = line height
-        // 3. DI = y * 80
+        // 2. DI = y * 80
         shl  ax, 1       ; y * 4
         shl  ax, 1
         add  ax, di      ; y * 5
@@ -123,9 +115,9 @@ OK:     sub cl, bl          ; CL = distance y0..y1
         mov  di, ax
         lds  si, cell    ; DS:SI *cell
         lodsw            ; AX = cell
-        // 4. vertical plots
+        // 3. vertical plots
 NEXT:   mov es:[di], ax
-        add di, dx       ; add reg, reg is faster than add reg, imm 
+        add di, dx       ; add reg, reg is faster than add reg, imm
         loop NEXT
     }
 }
@@ -139,7 +131,7 @@ void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
         mov ax, MDA_SEGMENT
         mov es, ax          ; ES:DI *VRAM
         lds si, rect        ; DS:SI *rect
-load up x,y,w,h into a,b,c,d and printout
+//load up x,y,w,h into a,b,c,d and printout
 
         // 4. draw top line
 /*
@@ -147,15 +139,15 @@ load up x,y,w,h into a,b,c,d and printout
         mov bx, cx           ; BX copy of width
         rep stosw            ; top line
         5. draw lhs rhs vertical lines
-        mov di, dx           ; restore top left corner 
-        add di, MDA_ROW_BYTES    ; next line 
+        mov di, dx           ; restore top left corner
+        add di, MDA_ROW_BYTES    ; next line
         mov cx, (height)     ; CX = height
-NEXT:   mov es:[di], ax      ; lhs cell 
+NEXT:   mov es:[di], ax      ; lhs cell
         mov es:[di + bx], ax ; rhs cell
-        add di, MDA_ROW_BYTES    ; next line 
+        add di, MDA_ROW_BYTES    ; next line
         loop NEXT
         6. draw bottom line
-        mov cx, bx           ; CX = width 
+        mov cx, bx           ; CX = width
         rep stosw            ; bottom line
 */
     }

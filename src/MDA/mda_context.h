@@ -34,7 +34,7 @@ typedef struct {
 
 void mda_plot(mda_point_t* point, mda_cell_t* cell);
 
-void mda_hline((mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell);
+void mda_hline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell);
 
 void mda_vline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell);
 
