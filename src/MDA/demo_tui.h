@@ -2,6 +2,7 @@
 #define DEMO_TUI_H
 
 #include "mda_context.h"
+#include "cp437_constants.h"
 
 void demo_plot(mda_context_t* ctx) {
   mda_cell_t cell = mda_cell_make('*', ctx->attributes);
@@ -77,10 +78,8 @@ void demo_attr(mda_context_t* ctx) {
 }
 
 void demo_draw_rect(mda_context_t* ctx) {
-  mda_rect_t r = mda_rect_make(1, 2, 3, 4);
-  mda_cell_t cell = mda_cell_make('*', ctx->attributes);
-
-  printf("(%i, %i, %i, %i)\n", r.x, r.y, r.w, r.h);
+  mda_rect_t r = mda_rect_make(5, 2, 35, 5);
+  mda_cell_t cell = mda_cell_make(CP437_DARK_SHADE, ctx->attributes);
 
   mda_draw_rect(&r, &cell);
 }

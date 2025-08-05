@@ -128,35 +128,52 @@ void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
         mov ax, MDA_SEGMENT
         mov es, ax          ; ES:DI *VRAM
         lds si, rect        ; DS:SI *rect
-        mov bl, ds:[si]     ; BL = rect.x
-        sub bh, bh          ; BX = rect.x
-        mov al, ds:[si+1]   ; AL = rect.y
-        sub ah, ah          ; AX = rect.y
-        mov di, ax          ; DI copy rect.y
-        mov cl, ds:[si+2]   ; CL = rect.w
-        sub ch, ch          ; CX = rect.w
+        lodsb               ; AL = rect.x
+        sub ah, ah          ; AX = rect.x
+        mov bl, ds:[si]     ; BL = rect.y
+        sub bh, bh          ; BX = rect.y
+        mov di, bx          ; DI copy rect.y
+        mov cl, ds:[si+1]   ; CL = rect.w
+        sub ch, ch          ; CX = width
+        mov dl, ds:[si+2]   ; DL = rect.h
+        sub dh, dh          ; DH = height
         // 2. DI = y * 80
-        shl  ax, 1       ; y * 4
-        shl  ax, 1
-        add  ax, di      ; y * 5
-        shl  ax, 1       ; y * 5 * 16
-        shl  ax, 1
-        shl  ax, 1
-        shl  ax, 1
-        add  ax, bx      ; ax = y*80 + x
-        shl  ax, 1       ; word offset
-        mov  di, ax
-        // 3. draw top line
-        cld              ; increment
+        shl  di, 1          ; y * 4
+        shl  di, 1
+        add  di, bx         ; y * 5
+        shl  di, 1          ; y * 5 * 16
+        shl  di, 1
+        shl  di, 1
+        shl  di, 1
+        add  di, ax         ; ax = y*80 + x
+        shl  di, 1          ; word offset ES:DI *VRAM (x,y)
+        // 3. preserve origin and width
+        lds si, cell        ; DS:SI *cell
+        lodsw               ; AX = char:attribute pair
+        mov si, di          ; SI copy top left corner VRAM
+        // 4. build BX into rhs vertical offset
+        push cx             ; copy of width
+        mov bx, cx          ; BX = width
+        dec bx              ; BX = width-1
+        shl bx, 1           ; BX = (width-1)*2
+        // 5. draw horizontal line
+        cld                 ; increment
         rep stosw
+        // 5. draw lhs and rhs vertical lines
+        mov di, si          ; restore top left corner
+        mov cx, dx          ; CX is height loop counter
+        mov dx, MDA_ROW_BYTES
+        add di, dx          ; next line
+NEXT:   mov es:[di], ax     ; lhs cell
+        mov es:[di+bx], ax  ; rhs cell
+        add di, dx          ; next line
+        loop NEXT
+        // 6. draw bottom line
+        pop cx              ; CX = width
+        rep stosw           ; bottom line
 /*
-        mov dx, di           ; DX copy top left corner VRAM
-        mov bx, cx           ; BX copy of width
-        rep stosw            ; top line
-        5. draw lhs rhs vertical lines
-        mov di, dx           ; restore top left corner
-        add di, MDA_ROW_BYTES    ; next line
-        mov cx, (height)     ; CX = height
+
+
 NEXT:   mov es:[di], ax      ; lhs cell
         mov es:[di + bx], ax ; rhs cell
         add di, MDA_ROW_BYTES    ; next line
