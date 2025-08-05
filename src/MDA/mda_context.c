@@ -159,5 +159,5 @@ NEXT:   mov es:[di], ax      ; lhs cell
         rep stosw            ; bottom line
 */
     }
-    printf("%i,%i,%i,%i\n",a,b,c,d);
+     printf("(x=%i, y=%i, w=%i, h=i%\n)",a ,b ,c ,d);
 }
