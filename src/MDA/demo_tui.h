@@ -7,8 +7,8 @@ void demo_plot(mda_context_t* ctx) {
   mda_point_t p1 = mda_point_make(20, 10);
   printf("(%i, %i)", p0.pos.x, p0.pos.y);
   printf("(%i, %i)", p1.pos.x, p1.pos.y);
-  mda_plot(p0, cell);
-  mda_plot(p1, cell);
+  mda_plot(&p0, &cell);
+  mda_plot(&p1, &cell);
 }
 
 void demo_hline(mda_context_t* ctx) {
@@ -17,7 +17,7 @@ void demo_hline(mda_context_t* ctx) {
   mda_cell_t cell = mda_cell_make('-', ctx.attributes);
   
   for(int i = 0; i < 20; ++i) {
-    mda_hline(p0,p1, cell);
+    mda_hline(&p0, &p1, &cell);
     p0.pos.y++;
     p1.pos.x++;
   }
@@ -29,7 +29,7 @@ void demo_vline(mda_context_t ctx) {
   mda_cell_t cell = mda_cell_make('|', ctx.attributes);
   
   for(int i = 0; i < 20; ++i) {
-    mda_vline(p0, p1, celld);
+    mda_vline(&p0, &p1, &cell);
     p0.pos.x += 2;
     p1.pos.y++;
   }
@@ -40,38 +40,38 @@ void demo_attr(mda_context_t ctx) {
   // 1. Initialize in place
   mda_cell_t cell;
   mda_init_cell(&cell, 'A', ctx.attributes);
-  mda_plot(p, cell);
+  mda_plot(&p, &cell);
   
   // 2. Modify attribute: OR in bold
   mda_cell_bold(&cell);
   p.pos.x++;
-  mda_plot(p, cell);
+  mda_plot(&p, &cell);
   
   // 3. Set new character
   mda_cell_set_char(&cell, 'B');
   p.pos.x++;
-  mda_plot(p, cell);
+  mda_plot(&p, &cell);
   
   // 4. Set underline (replaces current attr)
   mda_cell_set_attr(&cell, MDA_UNDERLINE);
   p.pos.x++;
-  mda_plot(p, cell);
+  mda_plot(&p, &cell);
   
   // 5. OR in blink
   mda_cell_blink(&cell);
   p.pos.x++;
-  mda_plot(p, cell);
+  mda_plot(&p, &cell);
   
   // 6. Use make_cell for temporary
   cell = mda_make_cell('C', MDA_REVERSE);
   p.pos.x++;
-  mda_plot(p, cell);
+  mda_plot(&p, &cell);
   
   // 7. Direct packed access
   mda_cell_set_char(&cell, 'D');
   mda_cell_set_attr(&cell, MDA_BOLD | MDA_BLINK);
   p.pos.x++;
-  mda_plot(p, cell);
+  mda_plot(&p, &cell);
 }
 
 void demo_draw_rect(mda_context_t ctx) {
