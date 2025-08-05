@@ -82,7 +82,7 @@ void demo_draw_rect(mda_context_t* ctx) {
 
   printf("(%i, %i, %i, %i)\n", r.x, r.y, r.w, r.h);
 
-  //mda_draw_rect(&r, &cell);
+  mda_draw_rect(&r, &cell);
 }
 
 #endif
