@@ -171,16 +171,36 @@ NEXT:   mov es:[di], ax     ; lhs cell
         // 6. draw bottom line
         pop cx              ; CX = width
         rep stosw           ; bottom line
-/*
-
-
-NEXT:   mov es:[di], ax      ; lhs cell
-        mov es:[di + bx], ax ; rhs cell
-        add di, MDA_ROW_BYTES    ; next line
-        loop NEXT
-        6. draw bottom line
-        mov cx, bx           ; CX = width
-        rep stosw            ; bottom line
-*/
     }
+}
+
+void mda_fill_rect(mda_rect_t* rect, mda_cell_t* cell) {
+    __asm {
+        .8086
+        // 1. register setup
+        mov ax, MDA_SEGMENT
+        mov es, ax          ; ES:DI *VRAM
+        lds si, rect        ; DS:SI *rect
+        lodsb               ; AL = rect.x
+        sub ah, ah          ; AX = rect.x
+        mov bl, ds:[si]     ; BL = rect.y
+        sub bh, bh          ; BX = rect.y
+        mov di, bx          ; DI copy rect.y
+        mov cl, ds:[si+1]   ; CL = rect.w
+        sub ch, ch          ; CX = width
+        mov dl, ds:[si+2]   ; DL = rect.h
+        sub dh, dh          ; DH = height
+        // 2. DI = y * 80
+        shl  di, 1          ; y * 4
+        shl  di, 1
+        add  di, bx         ; y * 5
+        shl  di, 1          ; y * 5 * 16
+        shl  di, 1
+        shl  di, 1
+        shl  di, 1
+        add  di, ax         ; ax = y*80 + x
+        shl  di, 1          ; word offset ES:DI *VRAM (x,y)
+        lds si, cell        ; DS:SI *cell
+        lodsw               ; AX = char:attribute pair
+        // 3. draw seriess horizontal lines length CX height times 
 }
