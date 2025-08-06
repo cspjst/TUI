@@ -78,10 +78,13 @@ void demo_attr(mda_context_t* ctx) {
 }
 
 void demo_draw_rect(mda_context_t* ctx) {
-  mda_rect_t r = mda_rect_make(5, 2, 35, 5);
+  mda_rect_t r = mda_rect_make(5, 2, 35, 7);
   mda_cell_t cell = mda_cell_make(CP437_DARK_SHADE, ctx->attributes);
-
   mda_draw_rect(&r, &cell);
+  getchar();
+  r = mda_rect_make(6, 3, 33, 5);
+  cell = mda_cell_make(CP437_LIGHT_SHADE, ctx->attributes);
+  mda_fill_rect(&r, &cell);
 }
 
 #endif

@@ -66,20 +66,21 @@ void mda_hline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
         inc cl              ; CL = distance x0..x1 + 1
         sub ch, ch          ; CX = width
         // 2. DI = y * 80
-        shl  di, 1           ; y * 4
+        shl  di, 1          ; y * 4
         shl  di, 1
-        add  di, bx          ; y * 5
-        shl  di, 1           ; y * 5 * 16
+        add  di, bx         ; y * 5
+        shl  di, 1          ; y * 5 * 16
         shl  di, 1
         shl  di, 1
         shl  di, 1
-        add  di, ax          ; ax = y*80 + x
-        shl  di, 1           ; word offset ES:DI *VRAM (x,y)
-        // 3. draw horizontal line
-        lds  si, cell        ; DS:SI *cell
-        lodsw                ; AX = char:attribute pair
-        cld                  ; increment
-        rep stosw
+        add  di, ax         ; ax = y*80 + x
+        shl  di, 1          ; word offset ES:DI *VRAM (x,y)
+        // 3. setup cell
+        lds  si, cell       ; DS:SI *cell
+        lodsw               ; AX = char:attribute pair
+        // 4. draw horizontal line
+        cld                 ; increment REP
+        rep stosw           ; draw hline
     }
 }
 
@@ -111,10 +112,10 @@ void mda_vline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
         shl  di, 1
         add  di, ax          ; ax = y*80 + x
         shl  di, 1           ; word offset ES:DI *VRAM (x,y)
-        // 3. draw horizontal line
+        // 3. setup cell
         lds  si, cell        ; DS:SI *cell
         lodsw                ; AX = char:attribute pair
-        // 3. vertical plots
+        // 4. vertical plots
 NEXT:   mov es:[di], ax
         add di, dx       ; add reg, reg is faster than add reg, imm
         loop NEXT
@@ -136,7 +137,8 @@ void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
         mov cl, ds:[si+1]   ; CL = rect.w
         sub ch, ch          ; CX = width
         mov dl, ds:[si+2]   ; DL = rect.h
-        sub dh, dh          ; DH = height
+        sub dh, dh          ; DX = height
+        sub dx, 2           ; height-2
         // 2. DI = y * 80
         shl  di, 1          ; y * 4
         shl  di, 1
@@ -147,29 +149,29 @@ void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
         shl  di, 1
         add  di, ax         ; ax = y*80 + x
         shl  di, 1          ; word offset ES:DI *VRAM (x,y)
+        // 3. setup cell
         lds si, cell        ; DS:SI *cell
         lodsw               ; AX = char:attribute pair
-        // 3. preserve origin and width
-        mov si, di          ; SI copy top left corner VRAM
-        push cx             ; copy of width
-        // 4. build BX into rhs vertical offset
-        mov bx, cx          ; BX = width
+        // 4. set rep counters,
+        mov si, di          ; SI copy of *VRAM
+        mov bx, cx          ; BX copy of width
+        cld                 ; increment REP
+        // 5. draw top horizontal line
+        rep stosw
+        mov cx, bx          ; restore CX width counter
+        mov di, si          ; restore *VRAM top left corner
+        // 6. setup registers for vertical lines
         dec bx              ; BX = width-1
         shl bx, 1           ; BX = (width-1)*2
-        // 5. draw horizontal line
-        cld                 ; increment
-        rep stosw
-        // 5. draw lhs and rhs vertical lines
-        mov di, si          ; restore top left corner
-        mov cx, dx          ; CX is height loop counter
-        mov dx, MDA_ROW_BYTES
-        add di, dx          ; next line
+        mov si, MDA_ROW_BYTES   ; SI = 160
+        add di, si          ; next line
+        // 7. draw lhs and rhs vertical lines between hlines
 NEXT:   mov es:[di], ax     ; lhs cell
         mov es:[di+bx], ax  ; rhs cell
-        add di, dx          ; next line
-        loop NEXT
-        // 6. draw bottom line
-        pop cx              ; CX = width
+        add di, si          ; next line *VRAM + 160
+        dec dx
+        jnz NEXT
+        // 8. draw bottom horizontal line
         rep stosw           ; bottom line
     }
 }
@@ -189,7 +191,7 @@ void mda_fill_rect(mda_rect_t* rect, mda_cell_t* cell) {
         mov cl, ds:[si+1]   ; CL = rect.w
         sub ch, ch          ; CX = width
         mov dl, ds:[si+2]   ; DL = rect.h
-        sub dh, dh          ; DH = height
+        sub dh, dh          ; DX = height
         // 2. DI = y * 80
         shl  di, 1          ; y * 4
         shl  di, 1
@@ -202,5 +204,21 @@ void mda_fill_rect(mda_rect_t* rect, mda_cell_t* cell) {
         shl  di, 1          ; word offset ES:DI *VRAM (x,y)
         lds si, cell        ; DS:SI *cell
         lodsw               ; AX = char:attribute pair
-        // 3. draw seriess horizontal lines length CX height times 
+        // 3. setup cell
+        lds  si, cell       ; DS:SI *cell
+        lodsw               ; AX = char:attribute pair
+        // 4. calculate next line offset
+        mov si, MDA_ROW_BYTES   ; SI = 160
+        sub si, cx          ; SI = 160 - (width * 2)
+        sub si, cx
+        // 5. set rep counters,
+        mov bx, cx          ; BX copy of width
+        cld                 ; increment REP
+        // 6. draw horizontal lines length CX height times
+ NEXT:  mov cx, bx          ; restore width
+        rep stosw           ; draw hline
+        add di, si   ; next line *VRAM + 160 - width
+        dec dx
+        jnz NEXT
+    }
 }
