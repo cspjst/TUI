@@ -20,7 +20,7 @@ void demo_hline(mda_context_t* ctx) {
   mda_cell_t cell = mda_cell_make('-', ctx->attributes);
 
   for(int i = 0; i < 20; ++i) {
-    mda_hline(&p0, &p1, &cell);
+    mda_draw_hline(&p0, &p1, &cell);
     p0.y++;
     p1.x++;
   }
@@ -32,7 +32,7 @@ void demo_vline(mda_context_t* ctx) {
   mda_cell_t cell = mda_cell_make('|', ctx->attributes);
 
   for(int i = 0; i < 20; ++i) {
-    mda_vline(&p0, &p1, &cell);
+    mda_draw_vline(&p0, &p1, &cell);
     p0.x += 2;
     p1.y++;
   }
