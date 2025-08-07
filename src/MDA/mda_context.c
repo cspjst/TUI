@@ -48,7 +48,7 @@ void mda_plot(mda_point_t* point, mda_cell_t* cell) {
     }
 }
 
-void mda_hline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
+void mda_draw_hline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
@@ -84,7 +84,7 @@ void mda_hline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
     }
 }
 
-void mda_vline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
+void mda_draw_vline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
@@ -122,7 +122,7 @@ NEXT:   mov es:[di], ax
     }
 }
 
-void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
+void mda_draw_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
