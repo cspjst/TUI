@@ -164,6 +164,10 @@ RHS:    movsw               ; *ES:DI++ = *DS:SI++ (RHS end cap char)
     }
 }
 
+void mda_draw_hvline_caps(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cells) {
+    //**** TODO ****
+}
+
 void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
     __asm {
         .8086

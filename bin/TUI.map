@@ -1,7 +1,7 @@
 Open Watcom Linker Version 2.0 beta Nov 23 2024 15:34:21
 Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       25/08/08 21:41:05
+Created on:       25/08/08 21:48:57
 Executable Image: TUI.exe
 creating a DOS executable
 
@@ -389,4 +389,4 @@ Module: /opt/watcom/lib286/dos/clibl.lib(clearenv)
 Stack size:  0800 (2048.)
 Memory size:  9bc0 (39872.)
 Entry point address: 0000:2724
-Link time: 00:00.56
+Link time: 00:00.97
