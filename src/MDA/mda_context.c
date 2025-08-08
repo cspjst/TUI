@@ -122,6 +122,41 @@ NEXT:   mov es:[di], ax
     }
 }
 
+void mda_draw_hline_caps(mda_point_t* point, mda_cell_t* cells) {
+    __asm {
+        .8086
+        // 1. register setup
+        mov ax, MDA_SEGMENT
+        mov es, ax          ; ES:DI *VRAM
+        lds si, p0          ; DS:SI *p0
+        lodsb               ; AL = p0.x
+        sub ah, ah          ; AX = p0.x
+        mov bl, ds:[si]     ; BL = p0.y
+        sub bh, bh          ; BX = p0.y
+        mov di, bx          ; DI copy p0.y
+        lds si, p1          ; DS:SI *p1
+        mov cl, ds:[si]     ; CL = p1.x
+        sub cl, al          ; CL = p1.x - p0.x
+        inc cl              ; CL = distance x0..x1 + 1
+        sub ch, ch          ; CX = width
+        // 2. DI = y * 80
+        shl  di, 1          ; y * 4
+        shl  di, 1
+        add  di, bx         ; y * 5
+        shl  di, 1          ; y * 5 * 16
+        shl  di, 1
+        shl  di, 1
+        shl  di, 1
+        add  di, ax         ; ax = y*80 + x
+        shl  di, 1          ; word offset ES:DI *VRAM (x,y)
+        // 3. setup cell
+        lds  si, cells       ; DS:SI *cells list of chars lhs,line,rhs 
+        lodsw               ; AX = char:attribute pair
+        // 4. draw horizontal line
+        cld                 ; increment REP
+        rep stosw           ; draw hline
+}
+
 void mda_draw_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
     __asm {
         .8086
