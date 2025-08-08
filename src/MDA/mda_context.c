@@ -122,7 +122,7 @@ NEXT:   mov es:[di], ax
     }
 }
 
-void mda_draw_hline_caps(mda_point_t* point, mda_cell_t* cells) {
+void mda_draw_hline_caps(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cells) {
     __asm {
         .8086
         // 1. register setup
@@ -150,14 +150,21 @@ void mda_draw_hline_caps(mda_point_t* point, mda_cell_t* cells) {
         add  di, ax         ; ax = y*80 + x
         shl  di, 1          ; word offset ES:DI *VRAM (x,y)
         // 3. setup cell
-        lds  si, cells       ; DS:SI *cells list of chars lhs,line,rhs 
-        lodsw               ; AX = char:attribute pair
+        lds  si, cells      ; DS:SI *cells list of chars lhs,line,rhs
+        dec  cx
+        jcxz RHS
+        dec  cx
         // 4. draw horizontal line
-        cld                 ; increment REP
-        rep stosw           ; draw hline
+        cld                 ; increment
+        movsw               ; *ES:DI++ = *DS:SI++ (LHS end cap char)
+        lodsw               ; AX = *DS:SI++ (line char)
+        rep stosw           ; draw hline  *ES:DI++ = AX
+RHS:    movsw               ; *ES:DI++ = *DS:SI++ (RHS end cap char)
+
+    }
 }
 
-void mda_draw_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
+void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup

@@ -26,6 +26,19 @@ void demo_hline(mda_context_t* ctx) {
   }
 }
 
+void demo_hline_cap(mda_context_t* ctx) {
+  mda_point_t p0 = mda_point_make(5, 2); // line of width 1
+  mda_point_t p1 = mda_point_make(5, 2);
+   mda_cell_t cell = mda_cell_make('-', ctx->attributes);
+  mda_cell_t cells[] = {0x071B, 0x07C4, 0x071A};
+
+  for(int i = 0; i < 20; ++i) {
+    mda_draw_hline_caps(&p0, &p1, cells);
+    p0.y++;
+    p1.x++;
+  }
+}
+
 void demo_vline(mda_context_t* ctx) {
   mda_point_t p0 = mda_point_make(5, 2); // line of height 1
   mda_point_t p1 = mda_point_make(5, 2);
