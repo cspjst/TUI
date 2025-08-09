@@ -11,7 +11,39 @@
  * @author Jeremy Thornton
  */
 #include "mda_primitives.h"
+#include "mda_attributes.h"
+#include "mda_cell.h"
 #include "mda_constants.h"
+
+mda_cell_t* mda_as_pointer(mda_point_t* point) {
+    mda_cell_t* pcell = 0;
+    mda_cell_t** ppcell = &pcell;
+    __asm {
+        .8086
+        // 1. register setup
+        lds si, point       ; DS:SI *point
+        lodsb               ; AL = x
+        xor ah, ah          ; AX = x
+        mov bl, ds:[si]     ; BL = y
+        xor bh, bh          ; BX = y
+        mov dx, bx          ; DX copy y
+        // 2. DI = y * 80
+        shl  dx, 1           ; y * 4
+        shl  dx, 1
+        add  dx, bx          ; y * 5
+        shl  dx, 1           ; y * 5 * 16
+        shl  dx, 1
+        shl  dx, 1
+        shl  dx, 1
+        add  dx, ax          ; ax = y*80 + x
+        shl  dx, 1           ; word offset ES:DI *VRAM (x,y)
+        // 3. setup ptr
+        les  di, ppcell
+        mov  es:[di], dx
+        mov  es:[di+2], MDA_SEGMENT
+    }
+    return pcell;
+}
 
 void mda_plot(mda_point_t* point, mda_cell_t* cell) {
     __asm {
@@ -302,5 +334,49 @@ void mda_fill_rect(mda_rect_t* rect, mda_cell_t* cell) {
         add di, si   ; next line *VRAM + 160 - width
         dec dx
         jnz NEXT
+    }
+}
+
+// void mda_blit(mda_rect_t* to, mda_rect_t* from);
+
+void mda_fill_screen(mda_cell_t* cell) {
+    __asm {
+        mov ax, MDA_SEGMENT
+        mov es, ax          ; ES:DI *VRAM
+        xor di, di
+        lds si, cell        ; DS:SI *rect
+        lodsw               ; AX = attribut:char pair
+        mov cx, MDA_SCREEN_WORDS
+        cld
+        rep stosw           ; fill VRAM text page with cell
+    }
+}
+
+void mda_save_screen(FILE* f) {
+    require_fd(f, "NULL file pointer!");
+    ensure(fwrite(MDA_VRAM_PTR, sizeof(char), MDA_SCREEN_BYTES, f) == MDA_SCREEN_BYTES, "FAIL to write!");
+
+}
+
+void mda_load_screen(FILE* f) {
+    require_fd(f, "NULL file pointer!");
+    ensure(fread(MDA_VRAM_PTR, sizeof(char), MDA_SCREEN_BYTES, f) == MDA_SCREEN_BYTES, "FAIL to read!");
+}
+
+void mda_save_rect(FILE* f, mda_rect_t* rect) {
+    require_fd(f, "NULL file pointer!");
+    mda_cell_t* vram = mda_as_pointer(&rect->origin);
+    for (int y = 0; y < rect->h; y++) {
+        ensure(fwrite(vram, sizeof(mda_cell_t), rect->w, f) == rect->w, "FAIL to write!");
+        vram += MDA_ROW_WORDS;
+    }
+}
+
+void mda_load_rect(FILE* f, mda_rect_t* rect) {
+    require_fd(f, "NULL file pointer!");
+    mda_cell_t* vram = mda_as_pointer(&rect->origin);
+    for (int y = 0; y < rect->h; y++) {
+        ensure(fread(vram, sizeof(mda_cell_t), rect->w, f) == rect->w, "FAIL to write!");
+        vram += MDA_ROW_WORDS;
     }
 }

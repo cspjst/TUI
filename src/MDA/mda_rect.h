@@ -25,7 +25,11 @@ typedef union {
     uint32_t packed;          /**< Raw 32-bit access for efficiency */
     struct {
         uint8_t x, y, w, h;   /**< Position (x,y) and size (w,h) as byte fields */
-    };                        /**< Anonymous struct for field access */
+    };
+    struct {
+        mda_point_t origin;
+        mda_dim_t dimensions;
+    };
 } mda_rect_t;
 
 static inline void mda_rect_init(mda_rect_t* r, uint8_t x, uint8_t y, uint8_t w, uint8_t h) {

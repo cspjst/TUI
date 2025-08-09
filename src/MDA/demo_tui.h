@@ -1,9 +1,18 @@
 #ifndef DEMO_TUI_H
 #define DEMO_TUI_H
 
+#include "mda_cell.h"
 #include "mda_primitives.h"
 #include "mda_context.h"
 #include "cp437_constants.h"
+
+void demo_mda_ptr(mda_context_t* ctx) {
+    mda_point_t p = mda_point_make(20, 10);
+    mda_cell_t cell = mda_cell_make(CP437_SMILING_FACE, MDA_NORMAL | MDA_BLINK);
+    mda_cell_t* vram = mda_as_pointer(&p);
+    printf("VRAM = %p", vram);
+    *vram = cell;
+}
 
 void demo_plot(mda_context_t* ctx) {
   mda_cell_t cell = mda_cell_make('*', ctx->attributes);
@@ -112,6 +121,70 @@ void demo_draw_rect(mda_context_t* ctx) {
   r = mda_rect_make(6, 3, 33, 5);
   cell = mda_cell_make(CP437_LIGHT_SHADE, ctx->attributes);
   mda_fill_rect(&r, &cell);
+}
+
+void demo_blit(mda_context_t* ctx) {
+
+}
+
+void demo_fill_screen(mda_context_t* ctx) {
+    mda_cell_t cell = mda_cell_make(CP437_SMILING_FACE, MDA_NORMAL | MDA_BLINK);
+    mda_fill_screen(&cell);
+    getchar();
+    mda_clear_screen();
+}
+
+void demo_save_restore(mda_context_t *ctx) {
+    FILE* f;
+    mda_cell_t cell = mda_cell_make(CP437_SMILING_FACE, MDA_NORMAL);
+
+    f = fopen("screen.mda", "wb");
+    require_fd(f, "FAIL to open file!");
+    mda_fill_screen(&cell);
+    mda_save_screen(f);
+    fclose(f);
+    printf("Screen saved to screen.mda\n");
+
+    getchar();
+    mda_clear_screen();
+
+    printf("Press any key to restore...\n");
+    getchar();
+
+    f = fopen("screen.mda", "rb");
+    require_fd(f, "FAIL to open file!");
+    mda_load_screen(f);
+    fclose(f);
+    printf("Screen restored!\n");
+}
+
+void demo_rect_save_restore(mda_context_t *ctx) {
+    FILE* f;
+    mda_rect_t r0 = mda_rect_make(5, 2, 35, 7);
+    mda_rect_t r1 = mda_rect_make(10, 15, 35, 7);
+    mda_cell_t cell = mda_cell_make(CP437_SMILING_FACE, MDA_NORMAL);
+
+    f = fopen("rect.mda", "wb");
+    require_fd(f, "FAIL to open file!");
+    mda_fill_screen(&cell);
+    mda_save_rect(f, &r0);
+    fclose(f);
+    printf("Rectangle saved to rect.mda\n");
+
+    getchar();
+    mda_clear_screen();
+
+    printf("Press any key to restore...\n");
+    getchar();
+
+    f = fopen("rect.mda", "rb");
+    require_fd(f, "FAIL to open file!");
+    mda_load_rect(f, &r1);
+    getchar();
+    rewind(f);
+    mda_load_rect(f, &r0);
+    fclose(f);
+    printf("Screen restored!\n");
 }
 
 #endif

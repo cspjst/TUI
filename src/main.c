@@ -16,13 +16,17 @@ int main() {
     mda_context_t ctx;
     mda_initialize_default_context(&ctx);
 
+    //demo_mda_ptr(&ctx);
     //demo_plot(&ctx);
     //demo_attr(&ctx);
     //demo_hline(&ctx);
     //demo_hline_cap(&ctx);
-    demo_vline_cap(&ctx);
+    //demo_vline_cap(&ctx);
     //demo_vline(&ctx);
     //demo_draw_rect(&ctx);
+    //demo_fill_screen(&ctx);
+    //demo_save_restore(&ctx);
+    demo_rect_save_restore(&ctx);
 
     getchar();
 
