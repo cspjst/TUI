@@ -19,7 +19,8 @@ int main() {
     //demo_plot(&ctx);
     //demo_attr(&ctx);
     //demo_hline(&ctx);
-    demo_hline_cap(&ctx);
+    //demo_hline_cap(&ctx);
+    demo_vline_cap(&ctx);
     //demo_vline(&ctx);
     //demo_draw_rect(&ctx);
 
