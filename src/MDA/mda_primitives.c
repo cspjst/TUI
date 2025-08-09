@@ -1,3 +1,15 @@
+/**
+ * @file mda_primitives.c
+ * @brief 8086 Assembly Implementation of MDA Text-Mode Drawing Primitives
+ * @details Low-level, unbounded rendering functions optimized for IBM PC/XT
+ * (8088 @ 4.77 MHz). Uses direct video memory access at segment B000h
+ * for maximum performance in monochrome text mode.
+ *
+ * All functions assume caller has clipped coordinates to 80x25 or context bounds.
+ *
+ * @note Hand-tuned for minimal instruction count and cycle usage.
+ * @author Jeremy Thornton
+ */
 #include "mda_primitives.h"
 #include "mda_constants.h"
 
@@ -9,9 +21,9 @@ void mda_plot(mda_point_t* point, mda_cell_t* cell) {
         mov es, ax          ; ES:DI *VRAM
         lds si, point       ; DS:SI *point
         lodsb               ; AL = x
-        sub ah, ah          ; AX = x
+        xor ah, ah          ; AX = x
         mov bl, ds:[si]     ; BL = y
-        sub bh, bh          ; BX = y
+        xor bh, bh          ; BX = y
         mov di, bx          ; DI copy y
         // 2. DI = y * 80
         shl  di, 1           ; y * 4
@@ -37,15 +49,15 @@ void mda_draw_hline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
         mov es, ax          ; ES:DI *VRAM
         lds si, p0          ; DS:SI *p0
         lodsb               ; AL = p0.x
-        sub ah, ah          ; AX = p0.x
+        xor ah, ah          ; AX = p0.x
         mov bl, ds:[si]     ; BL = p0.y
-        sub bh, bh          ; BX = p0.y
+        xor bh, bh          ; BX = p0.y
         mov di, bx          ; DI copy p0.y
         lds si, p1          ; DS:SI *p1
         mov cl, ds:[si]     ; CL = p1.x
         sub cl, al          ; CL = p1.x - p0.x
         inc cl              ; CL = distance x0..x1 + 1
-        sub ch, ch          ; CX = width
+        xor ch, ch          ; CX = width
         // 2. DI = y * 80
         shl  di, 1          ; y * 4
         shl  di, 1
@@ -73,15 +85,15 @@ void mda_draw_vline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
         mov es, ax          ; ES:DI *VRAM
         lds si, p0          ; DS:SI *p0
         lodsb               ; AL = p0.x
-        sub ah, ah          ; AX = p0.x
+        xor ah, ah          ; AX = p0.x
         mov bl, ds:[si]     ; BL = p0.y
-        sub bh, bh          ; BX = p0.y
+        xor bh, bh          ; BX = p0.y
         mov di, bx          ; DI copy p0.y
         lds si, p1          ; DS:SI *p1
         mov cl, ds:[si+1]   ; CL = p1.y
         sub cl, bl          ; CL = p1.y - p0.y
         inc cl              ; CL = distance y0..y1 + 1
-        sub ch, ch          ; CX = height
+        xor ch, ch          ; CX = height
         mov dx, MDA_ROW_BYTES
         // 2. DI = y * 80
         shl  di, 1          ; y * 4
@@ -111,15 +123,15 @@ void mda_draw_hline_caps(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cells) {
         mov es, ax          ; ES:DI *VRAM
         lds si, p0          ; DS:SI *p0
         lodsb               ; AL = p0.x
-        sub ah, ah          ; AX = p0.x
+        xor ah, ah          ; AX = p0.x
         mov bl, ds:[si]     ; BL = p0.y
-        sub bh, bh          ; BX = p0.y
+        xor bh, bh          ; BX = p0.y
         mov di, bx          ; DI copy p0.y
         lds si, p1          ; DS:SI *p1
         mov cl, ds:[si]     ; CL = p1.x
         sub cl, al          ; CL = p1.x - p0.x
         inc cl              ; CL = distance x0..x1 + 1
-        sub ch, ch          ; CX = width
+        xor ch, ch          ; CX = width
         // 2. DI = y * 80
         shl  di, 1          ; y * 4
         shl  di, 1
@@ -152,15 +164,15 @@ void mda_draw_vline_caps(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cells) {
         mov es, ax          ; ES:DI *VRAM
         lds si, p0          ; DS:SI *p0
         lodsb               ; AL = p0.x
-        sub ah, ah          ; AX = p0.x
+        xor ah, ah          ; AX = p0.x
         mov bl, ds:[si]     ; BL = p0.y
-        sub bh, bh          ; BX = p0.y
+        xor bh, bh          ; BX = p0.y
         mov di, bx          ; DI copy p0.y
         lds si, p1          ; DS:SI *p1
         mov cl, ds:[si+1]   ; CL = p1.y
         sub cl, bl          ; CL = p1.y - p0.y
         inc cl              ; CL = distance y0..y1 + 1
-        sub ch, ch          ; CX = height
+        xor ch, ch          ; CX = height
         mov dx, MDA_ROW_BYTES
         // 2. DI = y * 80
         shl  di, 1          ; y * 4
@@ -200,14 +212,14 @@ void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
         mov es, ax          ; ES:DI *VRAM
         lds si, rect        ; DS:SI *rect
         lodsb               ; AL = rect.x
-        sub ah, ah          ; AX = rect.x
+        xor ah, ah          ; AX = rect.x
         mov bl, ds:[si]     ; BL = rect.y
-        sub bh, bh          ; BX = rect.y
+        xor bh, bh          ; BX = rect.y
         mov di, bx          ; DI copy rect.y
         mov cl, ds:[si+1]   ; CL = rect.w
-        sub ch, ch          ; CX = width
+        xor ch, ch          ; CX = width
         mov dl, ds:[si+2]   ; DL = rect.h
-        sub dh, dh          ; DX = height
+        xor dh, dh          ; DX = height
         sub dx, 2           ; height-2
         // 2. DI = y * 80
         shl  di, 1          ; y * 4
@@ -254,14 +266,14 @@ void mda_fill_rect(mda_rect_t* rect, mda_cell_t* cell) {
         mov es, ax          ; ES:DI *VRAM
         lds si, rect        ; DS:SI *rect
         lodsb               ; AL = rect.x
-        sub ah, ah          ; AX = rect.x
+        xor ah, ah          ; AX = rect.x
         mov bl, ds:[si]     ; BL = rect.y
-        sub bh, bh          ; BX = rect.y
+        xor bh, bh          ; BX = rect.y
         mov di, bx          ; DI copy rect.y
         mov cl, ds:[si+1]   ; CL = rect.w
-        sub ch, ch          ; CX = width
+        xor ch, ch          ; CX = width
         mov dl, ds:[si+2]   ; DL = rect.h
-        sub dh, dh          ; DX = height
+        xor dh, dh          ; DX = height
         // 2. DI = y * 80
         shl  di, 1          ; y * 4
         shl  di, 1

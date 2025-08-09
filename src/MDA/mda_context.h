@@ -1,13 +1,15 @@
 /**
  * @file mda_context.h
- * @brief MDA (Monochrome Display Adapter) context management API
- * @version 0.1.2
- * @license MIT
- * @author Jeremy Thornton
+ * @brief MDA Display Context Management
+ * @details Provides a stateful context structure for managing
+ * MDA/Hercules text-mode display properties, including bounds,
+ * attributes, cursor state, and tab settings. Integrates with
+ * BIOS video services for hardware-level control.
  *
- * @details
- * This module provides the core context structure and initialization routines
- * for MDA text-mode operations on IBM PC/XT/AT and compatible systems.
+ * This context serves as the core runtime environment for
+ * console-like I/O operations on monochrome displays.
+ *
+ * @author Jeremy Thornton
  */
 #ifndef MDA_CONTEXT_H
 #define MDA_CONTEXT_H
@@ -19,55 +21,99 @@
 #include <stdint.h>
 #include <stdio.h>
 
+
+/**
+ * @struct mda_context_t
+ * @brief Runtime context for MDA text-mode operations.
+ *
+ * Encapsulates display bounds, text attributes, tab settings,
+ * and BIOS-level video and cursor state. Used to maintain
+ * consistent console behavior across drawing and I/O functions.
+ */
 typedef struct {
-    mda_rect_t bounds;
-    char attributes;
-    uint8_t htab_size;
-    uint8_t vtab_size;
-    bios_video_state_t video;
-    bios_cursor_state_t cursor;
+    mda_rect_t bounds;           /**< Bounding rectangle for current context */
+    char attributes;             /**< Current text attribute byte */
+    uint8_t htab_size;           /**< Horizontal tab spacing (in columns) */
+    uint8_t vtab_size;           /**< Vertical tab spacing (in rows) */
+    bios_video_state_t video;    /**< Saved BIOS video mode and page info */
+    bios_cursor_state_t cursor;  /**< Saved cursor position and shape */
     // TODO clip function here
     // TODO: mouse_state mouse; has mouse support etc
 } mda_context_t;
 
-// context bounded functions
 
+/**
+ * @brief Initialize context with default values (full screen, normal attributes).
+ * @param ctx Pointer to context to initialize.
+ */
 void mda_initialize_default_context(mda_context_t* ctx);
 
+
+/**
+ * @brief Set the active bounds for the context.
+ * @param ctx Pointer to context.
+ * @param x   Left edge of bounds (column).
+ * @param y   Top edge of bounds (row).
+ * @param w   Width in columns.
+ * @param h   Height in rows.
+ */
 void mda_set_bounds(mda_context_t* ctx, uint8_t x, uint8_t y, uint8_t w, uint8_t h);
 
-void mda_cursor_to(mda_context_t* ctx, mda_point_t* p);
+/**
+ * @defgroup cursor_ops Cursor Movement & Advancement
+ * @brief Functions for direct and incremental cursor control.
+ * @{
+ */
+void mda_cursor_to(mda_context_t* ctx, mda_point_t* p); ///<  Move cursor to specified position within bounds
+void mda_cursor_advance(mda_context_t* ctx);  ///< Advance cursor right with wrap
+///@}
 
-void mda_cursor_advance(mda_context_t* ctx);
 
-void mda_ascii_BEL(mda_context_t* ctx);
-
-void mda_ascii_BS(mda_context_t* ctx);
-
-void mda_ascii_HT(mda_context_t* ctx);
-
-void mda_ascii_LF(mda_context_t* ctx);
-
-void mda_ascii_VT(mda_context_t* ctx);
-
-void mda_ascii_FF(mda_context_t* ctx);
-
-void mda_ascii_CR(mda_context_t* ctx);
-
-void mda_ascii_ESC(mda_context_t* ctx);
-
+/**
+ * @defgroup ascii_controls ASCII Control Code Handlers
+ * @brief Implements standard 7-bit ASCII control character behavior.
+ * Each function processes one control code using current context state.
+ * Designed to mirror classic terminal semantics on MDA/Hercules hardware.
+ * @{
+ */
+void mda_ascii_BEL(mda_context_t* ctx);  ///< Sound bell (CRTL-G)
+void mda_ascii_BS(mda_context_t* ctx);   ///< Backspace: move left, no underflow
+void mda_ascii_HT(mda_context_t* ctx);   ///< Horizontal tab: advance to next HT stop
+void mda_ascii_LF(mda_context_t* ctx);   ///< Line Feed: move down, scroll if needed
+void mda_ascii_VT(mda_context_t* ctx);   ///< Vertical Tab: advance down by vtab_size
+void mda_ascii_FF(mda_context_t* ctx);   ///< Form Feed: clear screen, home cursor
+void mda_ascii_CR(mda_context_t* ctx);   ///< Carriage Return: move to start of line
+void mda_ascii_ESC(mda_context_t* ctx);  ///< Escape: begin control sequence (stub)
+/**
+ * @brief Handle ASCII DEL — overwrite with invisible character.
+ * @details Unlike BS, DEL does not move cursor left.
+ * Instead, it writes an MDA_INVISIBLE cell (attribute 0x00).
+ * This matches hardware behavior on MDA/Hercules.
+ */
 void mda_ascii_DEL(mda_context_t* ctx);
+///@}
 
-void mda_write_CRLF(mda_context_t* ctx);
 
-void mda_write_char(mda_context_t* ctx, char chr);
+/**
+ * @defgroup text_output Text Output & Line Termination
+ * @brief Character writing and standard line-ending sequences.
+ * @{
+ */
+void mda_write_char(mda_context_t* ctx, char chr);  ///< Write char with current attr
+void mda_write_CRLF(mda_context_t* ctx);            ///< Write CR + LF sequence
+///@}
 
-void mda_scroll_up(mda_context_t* ctx);
 
-void mda_scroll_down(mda_context_t* ctx);
+/**
+ * @defgroup scrolling_ops Scrolling Operations
+ * @brief Full-line or full-column scroll routines.
+ * Used for display management when bounds are exceeded.
+ * @{
+ */
+void mda_scroll_up(mda_context_t* ctx);     ///< Scroll content up by one line
+void mda_scroll_down(mda_context_t* ctx);   ///< Scroll content down by one line
+void mda_scroll_left(mda_context_t* ctx);   ///< Scroll content left by one column
+void mda_scroll_right(mda_context_t* ctx);  ///< Scroll content right by one column
+///@}
 
-void mda_scroll_left(mda_context_t* ctx);
-
-void mda_scroll_right(mda_context_t* ctx);
-
-#endif
+#endif /* MDA_CONTEXT_H */

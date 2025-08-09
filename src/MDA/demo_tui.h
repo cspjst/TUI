@@ -40,6 +40,18 @@ void demo_hline_cap(mda_context_t* ctx) {
   }
 }
 
+void demo_vline(mda_context_t* ctx) {
+  mda_point_t p0 = mda_point_make(5, 2); // line of height 1
+  mda_point_t p1 = mda_point_make(5, 2);
+  mda_cell_t cell = mda_cell_make('|', ctx->attributes);
+
+  for(int i = 0; i < 20; ++i) {
+    mda_draw_vline(&p0, &p1, &cell);
+    p0.x += 2;
+    p1.y++;
+  }
+}
+
 void demo_vline_cap(mda_context_t* ctx) {
   mda_point_t p0 = mda_point_make(5, 2); // line of width 1
   mda_point_t p1 = mda_point_make(5, 2);
@@ -49,18 +61,6 @@ void demo_vline_cap(mda_context_t* ctx) {
   for(int i = 0; i < 20; ++i) {
     mda_draw_vline_caps(&p0, &p1, cells);
     p0.x++;
-    p1.y++;
-  }
-}
-
-void demo_vline(mda_context_t* ctx) {
-  mda_point_t p0 = mda_point_make(5, 2); // line of height 1
-  mda_point_t p1 = mda_point_make(5, 2);
-  mda_cell_t cell = mda_cell_make('|', ctx->attributes);
-
-  for(int i = 0; i < 20; ++i) {
-    mda_draw_vline(&p0, &p1, &cell);
-    p0.x += 2;
     p1.y++;
   }
 }
