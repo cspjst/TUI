@@ -376,7 +376,54 @@ void mda_load_rect(FILE* f, mda_rect_t* rect) {
     require_fd(f, "NULL file pointer!");
     mda_cell_t* vram = mda_as_pointer(&rect->origin);
     for (int y = 0; y < rect->h; y++) {
-        ensure(fread(vram, sizeof(mda_cell_t), rect->w, f) == rect->w, "FAIL to write!");
+        ensure(fread(vram, sizeof(mda_cell_t), rect->w, f) == rect->w, "FAIL to read!");
         vram += MDA_ROW_WORDS;
     }
 }
+
+void mda_scroll_up(mda_rect_t* rect) {
+    __asm {
+        .8086 
+        // 1. register setup
+        mov ax, MDA_SEGMENT
+        mov es, ax          ; ES:DI *VRAM
+        lds si, rect        ; DS:SI *rect
+        lodsb               ; AL = rect.x
+        xor ah, ah          ; AX = rect.x
+        mov bl, ds:[si]     ; BL = rect.y
+        xor bh, bh          ; BX = rect.y
+        mov di, bx          ; DI copy rect.y
+        mov cl, ds:[si+1]   ; CL = rect.w
+        xor ch, ch          ; CX = width
+        mov dl, ds:[si+2]   ; DL = rect.h
+        xor dh, dh          ; DX = height
+        // 2. DI = y * 80
+        shl  di, 1          ; y * 4
+        shl  di, 1
+        add  di, bx         ; y * 5
+        shl  di, 1          ; y * 5 * 16
+        shl  di, 1
+        shl  di, 1
+        shl  di, 1
+        add  di, ax         ; ax = y*80 + x
+        shl  di, 1          ; word offset ES:DI *VRAM (x,y) 
+        mov  ds, es  
+        mov  si, di         ; DS:SI *VRAM (x,y)
+        add  si, MDA_ROW_BYTES    ; source* is now 1 line down
+        // move a line up 
+        mov  bx, cx         ; BX copy CX 
+        dec  dx             ; height -1
+NEXT:   rep  movsb          ; copy row upwards 
+        mov  cx, bx         ; restore width counter  
+        add  si, MDA_ROW_BYTES    ; next line down
+        dec  dx 
+        jnz  NEXT           ; loop until all rows moved up 1
+    }
+}
+
+// void mda_scroll_down(mda_rect_t* rect) { }
+
+// void mda_scroll_left(mda_rect_t* rect) { }
+
+// void mda_scroll_right(mda_rect_t* rect) { }
+
