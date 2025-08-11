@@ -26,7 +26,8 @@ int main() {
     //demo_draw_rect(&ctx);
     //demo_fill_screen(&ctx);
     //demo_save_restore(&ctx);
-    demo_rect_save_restore(&ctx);
+    //demo_rect_save_restore(&ctx);
+    demo_scroll(&ctx);
 
     getchar();
 

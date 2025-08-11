@@ -5,6 +5,7 @@
 #include "mda_primitives.h"
 #include "mda_context.h"
 #include "cp437_constants.h"
+#include <stdio.h>
 
 void demo_mda_ptr(mda_context_t* ctx) {
     mda_point_t p = mda_point_make(20, 10);
@@ -174,7 +175,7 @@ void demo_rect_save_restore(mda_context_t *ctx) {
     getchar();
     mda_clear_screen();
 
-    printf("Press any key to restore...\n");
+    printf("Press any key to load...\n");
     getchar();
 
     f = fopen("rect.mda", "rb");
@@ -184,7 +185,32 @@ void demo_rect_save_restore(mda_context_t *ctx) {
     rewind(f);
     mda_load_rect(f, &r0);
     fclose(f);
-    printf("Screen restored!\n");
+}
+
+void demo_scroll (mda_context_t *ctx) {
+    mda_rect_t r0 = mda_rect_make(9, 14, 37, 9);
+    mda_rect_t r1 = mda_rect_make(10, 15, 35, 7);
+    mda_cell_t cell = mda_cell_make('0', MDA_NORMAL);
+    mda_point_t lhs, rhs;
+    lhs = rhs = mda_point_make(r1.x, r1.y);
+    rhs.x += r1.w-1;
+
+    FILE* f = fopen("rect.mda", "rb");
+    require_fd(f, "FAIL to open file!");
+    mda_load_rect(f, &r1);
+    mda_draw_rect(&r0, &cell);
+    for(int i = 0; i < r1.h; ++i) {
+        cell.chr++;
+        mda_plot(&lhs, &cell);
+        mda_plot(&rhs, &cell);
+        lhs.y++;
+        rhs.y++;
+    }
+    cell.chr = ' ';
+    getchar();
+    mda_scroll_up(&r1, &cell);
+
+    fclose(f);
 }
 
 #endif

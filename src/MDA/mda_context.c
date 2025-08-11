@@ -1,6 +1,7 @@
 #include "mda_context.h"
 #include "mda_attributes.h"
 #include "mda_rect.h"
+#include "mda_control_codes.h"
 #include "../CONTRACT/contract.h"
 #include "../BIOS/bios_video_services.h"
 
@@ -23,7 +24,7 @@ void mda_initialize_default_context(mda_context_t* ctx) {
 void mda_cursor_to(mda_context_t* ctx, mda_point_t* p) {
     require_address(ctx, "NULL context!");
     require(mda_rect_contains_point(&ctx->bounds, p), "POINT out of bounds!");
-    bios_set_cursor_position(x, y, ctx->video.page);
+    bios_set_cursor_position(p->x, p->y, ctx->video.page);
     bios_get_cursor_position_and_size(&ctx->cursor, ctx->video.page);
 }
 
@@ -38,23 +39,18 @@ void mda_cursor_down(mda_context_t* ctx) {
 void mda_cursor_forward(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
     ctx->cursor.column++;
-    if(ctx->cursor.column == (ctx->bounds.x + ctx->bounds.width)) {
+    if(ctx->cursor.column == (ctx->bounds.x + ctx->bounds.w)) {
         mda_print_CRLF(ctx);
         return;
     }
-    bios_set_cursor_position(x, y, ctx->video.page);
+    bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
     bios_get_cursor_position_and_size(&ctx->cursor, ctx->video.page);
 }
 
 void mda_cursor_back(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
-    if(ctx->cursor.column == ctx->bounds.x) {
-        ctx->cursor.column = ctx->bounds.x + ctx->bounds.width 
-        if(ctx->cursor.row = ctx->bounds.y) {
-            // scroll down
-        }
-    }
-    bios_set_cursor_position(x, y, ctx->video.page);
+
+    bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
     bios_get_cursor_position_and_size(&ctx->cursor, ctx->video.page);
 }
 
@@ -65,11 +61,7 @@ void mda_ctrl_BEL(mda_context_t* ctx) {
 
 void mda_ctrl_BS(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
-    if(ctx->cursor.column > ctx->x
-     if(ctx->cursor.column > ctx->x) {
-        ctx->cursor.column--;
-        bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
-    }
+
 }
 
 //void mda_ctrl_HT(mda_context_t* ctx);   ///< Horizontal tab: advance to next HT stop
@@ -77,7 +69,7 @@ void mda_ctrl_BS(mda_context_t* ctx) {
 void mda_ctrl_LF(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
     mda_cursor_down(ctx);
-    bios_set_cursor_position(x, y, ctx->video.page);
+    bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
     bios_get_cursor_position_and_size(&ctx->cursor, ctx->video.page);
 }
 
@@ -87,10 +79,10 @@ void mda_ctrl_LF(mda_context_t* ctx) {
 
 void mda_ctrl_CR(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
-    ctx->cursor.column = ctx->x;
-    bios_set_cursor_position(x, y, ctx->video.page);
+    ctx->cursor.column = ctx->bounds.x;
+    bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
     bios_get_cursor_position_and_size(&ctx->cursor, ctx->video.page);
-} 
+}
 
 //void mda_ctrl_ESC(mda_context_t* ctx);  ///< Escape: begin control sequence (stub)
 

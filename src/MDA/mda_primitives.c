@@ -11,7 +11,6 @@
  * @author Jeremy Thornton
  */
 #include "mda_primitives.h"
-#include "mda_attributes.h"
 #include "mda_cell.h"
 #include "mda_constants.h"
 
@@ -381,9 +380,9 @@ void mda_load_rect(FILE* f, mda_rect_t* rect) {
     }
 }
 
-void mda_scroll_up(mda_rect_t* rect) {
+void mda_scroll_up(mda_rect_t* rect, mda_cell_t* blank) {
     __asm {
-        .8086 
+        .8086
         // 1. register setup
         mov ax, MDA_SEGMENT
         mov es, ax          ; ES:DI *VRAM
@@ -397,6 +396,8 @@ void mda_scroll_up(mda_rect_t* rect) {
         xor ch, ch          ; CX = width
         mov dl, ds:[si+2]   ; DL = rect.h
         xor dh, dh          ; DX = height
+
+        mov ds, ax          ; ES = DS = VRAM segment
         // 2. DI = y * 80
         shl  di, 1          ; y * 4
         shl  di, 1
@@ -406,18 +407,27 @@ void mda_scroll_up(mda_rect_t* rect) {
         shl  di, 1
         shl  di, 1
         add  di, ax         ; ax = y*80 + x
-        shl  di, 1          ; word offset ES:DI *VRAM (x,y) 
-        mov  ds, es         ; ES and DS same segment
-        mov  si, di         ; DS:SI source* = destination*
-        add  si, MDA_ROW_BYTES    ; source* is now 1 line down
-        // 3. move successive rows up 1 
+        shl  di, 1          ; word offset ES:DI *VRAM (x,y)
+        // 3. register setup
+        mov  ax, MDA_SEGMENT
+        mov  ds, ax
+        mov  si, di         ; DS:SI* source = ES:DI* destination
+        mov  ax, MDA_ROW_BYTES
+        add  si, ax         ; DS:SI* is now 1 line down
+        sub  ax, cx         ; next line offset
+        sub  ax, cx         ; 160 - (2 * width)
+        // 4. move successive rows up 1
         dec  dx             ; height -1
-        mov  bx, cx         ; BX copy width 
-NEXT:   rep  movsw          ; copy row cells upwards 
-        mov  cx, bx         ; restore width counter  
-        add  si, MDA_ROW_BYTES    ; next line down
-        dec  dx 
+        mov  bx, cx         ; BX copy width
+NEXT:   rep  movsw          ; copy row cells upwards
+        mov  cx, bx         ; restore width counter
+        add  si, ax         ; next line down
+        add  di, ax
+        dec  dx
         jnz  NEXT           ; loop until all rows moved up 1
+        lds  si, blank
+        lodsw               ; AX = blank attrib:char
+        rep  stosw          ; bottom blank line
     }
 }
 
@@ -426,4 +436,3 @@ NEXT:   rep  movsw          ; copy row cells upwards
 // void mda_scroll_left(mda_rect_t* rect) { }
 
 // void mda_scroll_right(mda_rect_t* rect) { }
-
