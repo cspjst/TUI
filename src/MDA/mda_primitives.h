@@ -80,4 +80,20 @@ void mda_save_rect(FILE* f, mda_rect_t* rect);
 void mda_load_rect(FILE* f, mda_rect_t* rect);
 
 
+/**
+ * @defgroup scrolling_ops Scrolling Operations
+ * @brief Full-line or full-column scroll routines.
+ * Used for display management when bounds are exceeded.
+ * @{
+ */
+void mda_scroll_up(mda_rect_t* rect);     ///< Scroll content up by one line
+
+void mda_scroll_down(mda_rect_t* rect);   ///< Scroll content down by one line
+
+void mda_scroll_left(mda_rect_t* rect);   ///< Scroll content left by one column
+
+void mda_scroll_right(mda_rect_t* rect);  ///< Scroll content right by one column
+///@}
+
+
 #endif /* MDA_PRIMITIVES_H */
