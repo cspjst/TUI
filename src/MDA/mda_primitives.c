@@ -407,13 +407,13 @@ void mda_scroll_up(mda_rect_t* rect) {
         shl  di, 1
         add  di, ax         ; ax = y*80 + x
         shl  di, 1          ; word offset ES:DI *VRAM (x,y) 
-        mov  ds, es  
-        mov  si, di         ; DS:SI *VRAM (x,y)
+        mov  ds, es         ; ES and DS same segment
+        mov  si, di         ; DS:SI source* = destination*
         add  si, MDA_ROW_BYTES    ; source* is now 1 line down
-        // move a line up 
-        mov  bx, cx         ; BX copy CX 
+        // 3. move successive rows up 1 
         dec  dx             ; height -1
-NEXT:   rep  movsb          ; copy row upwards 
+        mov  bx, cx         ; BX copy width 
+NEXT:   rep  movsw          ; copy row cells upwards 
         mov  cx, bx         ; restore width counter  
         add  si, MDA_ROW_BYTES    ; next line down
         dec  dx 
