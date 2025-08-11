@@ -103,17 +103,4 @@ void mda_write_char(mda_context_t* ctx, char chr);  ///< Write char with current
 void mda_write_CRLF(mda_context_t* ctx);            ///< Write CR + LF sequence
 ///@}
 
-
-/**
- * @defgroup scrolling_ops Scrolling Operations
- * @brief Full-line or full-column scroll routines.
- * Used for display management when bounds are exceeded.
- * @{
- */
-void mda_scroll_up(mda_context_t* ctx);     ///< Scroll content up by one line
-void mda_scroll_down(mda_context_t* ctx);   ///< Scroll content down by one line
-void mda_scroll_left(mda_context_t* ctx);   ///< Scroll content left by one column
-void mda_scroll_right(mda_context_t* ctx);  ///< Scroll content right by one column
-///@}
-
 #endif /* MDA_CONTEXT_H */
