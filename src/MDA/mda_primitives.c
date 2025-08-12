@@ -484,6 +484,10 @@ NEXT:   rep  movsw          ; copy row cells downwards right to left
     }
 }
 
-// void mda_scroll_left(mda_rect_t* rect) { }
+void mda_scroll_left(mda_rect_t* rect, mda_cell_t* blank) {
 
-// void mda_scroll_right(mda_rect_t* rect) { }
+}
+
+void mda_scroll_right(mda_rect_t* rect, mda_cell_t* blank) {
+
+}
