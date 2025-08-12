@@ -208,7 +208,8 @@ void demo_scroll (mda_context_t *ctx) {
     }
     cell.chr = ' ';
     getchar();
-    mda_scroll_up(&r1, &cell);
+    //mda_scroll_up(&r1, &cell);
+    mda_scroll_down(&r1, &cell);
 
     fclose(f);
 }
