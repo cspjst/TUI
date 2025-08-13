@@ -29,68 +29,109 @@ void mda_cursor_to(mda_context_t* ctx, mda_point_t* p) {
 }
 
 void mda_cursor_up(mda_context_t* ctx) {
-
+    require_address(ctx, "NULL context!");
+    if (ctx->cursor.row == ctx->bounds.rect.y) {
+        mda_scroll_down(&ctx->bounds);
+        return;
+    }
+    ctx->cursor.row--;
+    bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
 }
 
 void mda_cursor_down(mda_context_t* ctx) {
-
+    require_address(ctx, "NULL context!");
+    if (ctx->cursor.row == ctx->bounds.rect.y + ctx->bounds.rect.h - 1) {
+        mda_scroll_up(&ctx->bounds);
+        return;
+    }
+    ctx->cursor.row++;
+    bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
 }
 
 void mda_cursor_forward(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
     ctx->cursor.column++;
-    if(ctx->cursor.column == (ctx->bounds.x + ctx->bounds.w)) {
-        mda_print_CRLF(ctx);
+    if (ctx->cursor.column >= ctx->bounds.rect.x + ctx->bounds.rect.w) { // over shoot so carriage return
+        mda_write_CRLF(ctx);
         return;
     }
     bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
-    bios_get_cursor_position_and_size(&ctx->cursor, ctx->video.page);
 }
 
 void mda_cursor_back(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
-
+    if (ctx->cursor.column > ctx->bounds.rect.x) { // Move left within current line
+        ctx->cursor.column--;
+    }
+    else if (ctx->cursor.row > ctx->bounds.rect.y) { // At left edge, but not at top: wrap to end of previous line
+        ctx->cursor.row--;
+        ctx->cursor.column = ctx->bounds.rect.x + ctx->bounds.rect.w - 1;
+    }
+    else { // At top-left corner: cannot go back — ring bell!
+        mda_ascii_BEL(ctx);
+    }
     bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
-    bios_get_cursor_position_and_size(&ctx->cursor, ctx->video.page);
 }
 
-void mda_ctrl_BEL(mda_context_t* ctx) {
+void mda_ctrl_code_BEL(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
     bios_write_text_teletype_mode(ASCII_BEL, 0, ctx->video.page);
 }
 
-void mda_ctrl_BS(mda_context_t* ctx) {
-    require_address(ctx, "NULL context!");
-
+void mda_ctrl_code_BS(mda_context_t* ctx) {
+    mda_cursor_back(ctx);
 }
 
-//void mda_ctrl_HT(mda_context_t* ctx);   ///< Horizontal tab: advance to next HT stop
+void mda_ctrl_code_HT(mda_context_t* ctx) {
+    for(int i = 0; i < ctx->htab_size; ++i) {
+        mda_cursor_forward(ctx);
+    }
+}
 
-void mda_ctrl_LF(mda_context_t* ctx) {
-    require_address(ctx, "NULL context!");
+void mda_ctrl_code_LF(mda_context_t* ctx) {
     mda_cursor_down(ctx);
-    bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
-    bios_get_cursor_position_and_size(&ctx->cursor, ctx->video.page);
 }
 
-//void mda_ctrl_VT(mda_context_t* ctx);   ///< Vertical Tab: advance down by vtab_size
+void mda_ctrl_code_VT(mda_context_t* ctx) {
+    for(int i = 0; i < ctx->vtab_size; ++i){
+        mda_ctrl_code_LF(ctx);
+    }
+}
 
-//void mda_ctrl_FF(mda_context_t* ctx);   ///< Form Feed: clear screen, home cursor
+void mda_ctrl_code_FF(mda_context_t* ctx) {
+    for(int i = 0; i < ctx->bounds.h; ++i){
+        mda_scroll_up(ctx->bounds);
+    }
+    ctx->cursor.row = ctx->bounds.rect.y;
+    ctx->cursor.column = ctx->bounds.rect.x;
+    bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
+}
 
-void mda_ctrl_CR(mda_context_t* ctx) {
+void mda_ctrl_code_CR(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
     ctx->cursor.column = ctx->bounds.x;
     bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
-    bios_get_cursor_position_and_size(&ctx->cursor, ctx->video.page);
 }
 
-//void mda_ctrl_ESC(mda_context_t* ctx);  ///< Escape: begin control sequence (stub)
+void mda_ctrl_code_ESC(mda_context_t* ctx) {
+    require_address(ctx, "NULL context!");
+    // set esc char mode
+}
 
-//void mda_ctrl_DEL(mda_context_t* ctx);
 
-//void mda_print_char(mda_context_t* ctx, char chr);  ///< Write char with current attr
+void mda_ctrl_code_DEL(mda_context_t* ctx) {
+    mda_ctrl_code_BS(ctx);
+    mda_print_char(ctx, ' ');
+    mda_ctrl_code_BS(ctx);
+}
+
+void mda_print_char(mda_context_t* ctx, char chr) {
+    require_address(ctx, "NULL context!");
+    bios_write_character_and_attribute_at_cursor(chr, ctx->attributes, 1, ctx->video.page);
+    mda_cursor_forward(ctx);
+}
 
 void mda_print_CRLF(mda_context_t* ctx) {
-    mda_ctrl_CR(ctx);
-    mda_ctrl_LF(ctx);
+    mda_ctrl_code_CR(ctx);
+    mda_ctrl_code_LF(ctx);
 }
