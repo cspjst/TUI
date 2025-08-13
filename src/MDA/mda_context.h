@@ -76,21 +76,21 @@ void mda_cursor_advance(mda_context_t* ctx);  ///< Advance cursor right with wra
  * Designed to mirror classic terminal semantics on MDA/Hercules hardware.
  * @{
  */
-void mda_ctrl_code_BEL(mda_context_t* ctx);  ///< Sound bell (CRTL-G)
-void mda_ctrl_code_BS(mda_context_t* ctx);   ///< Backspace: move left, no underflow
-void mda_ctrl_code_HT(mda_context_t* ctx);   ///< Horizontal tab: advance to next HT stop
-void mda_ctrl_code_LF(mda_context_t* ctx);   ///< Line Feed: move down, scroll if needed
-void mda_ctrl_code_VT(mda_context_t* ctx);   ///< Vertical Tab: advance down by vtab_size
-void mda_ctrl_code_FF(mda_context_t* ctx);   ///< Form Feed: clear screen, home cursor
-void mda_ctrl_code_CR(mda_context_t* ctx);   ///< Carriage Return: move to start of line
-void mda_ctrl_code_ESC(mda_context_t* ctx);  ///< Escape: begin control sequence (stub)
+void mda_do_ctrl_BEL(mda_context_t* ctx);  ///< Sound bell (CRTL-G)
+void mda_do_ctrl_BS(mda_context_t* ctx);   ///< Backspace: move left, no underflow
+void mda_do_ctrl_HT(mda_context_t* ctx);   ///< Horizontal tab: advance to next HT stop
+void mda_do_ctrl_LF(mda_context_t* ctx);   ///< Line Feed: move down, scroll if needed
+void mda_do_ctrl_VT(mda_context_t* ctx);   ///< Vertical Tab: advance down by vtab_size
+void mda_do_ctrl_FF(mda_context_t* ctx);   ///< Form Feed: clear screen, home cursor
+void mda_do_ctrl_CR(mda_context_t* ctx);   ///< Carriage Return: move to start of line
+void mda_do_ctrl_ESC(mda_context_t* ctx);  ///< Escape: begin control sequence (stub)
 /**
  * @brief Handle ASCII DEL — overwrite with invisible character.
  * @details Unlike BS, DEL does not move cursor left.
  * Instead, it writes an MDA_INVISIBLE cell (attribute 0x00).
  * This matches hardware behavior on MDA/Hercules.
  */
-void mda_ctrl_code_DEL(mda_context_t* ctx);
+void mda_do_ctrl_DEL(mda_context_t* ctx);
 ///@}
 
 
@@ -101,6 +101,7 @@ void mda_ctrl_code_DEL(mda_context_t* ctx);
  */
 void mda_print_char(mda_context_t* ctx, char chr);  ///< Write char with current attr
 void mda_print_CRLF(mda_context_t* ctx);            ///< Write CR + LF sequence
+void mda_print_string(mda_context_t* ctx, char* str);
 ///@}
 
 #endif /* MDA_CONTEXT_H */
