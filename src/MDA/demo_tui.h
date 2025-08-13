@@ -189,38 +189,33 @@ void demo_rect_save_restore(mda_context_t *ctx) {
 
 void demo_scroll (mda_context_t *ctx) {
     mda_rect_t r0 = mda_rect_make(9, 14, 37, 9);
-    mda_rect_t r1 = mda_rect_make(10, 15, 35, 7);
-    mda_cell_t cell = mda_cell_make('0', MDA_NORMAL);
-    mda_cell_t lttr = mda_cell_make('A', MDA_NORMAL);
-    mda_point_t lhs, rhs, blhs,brhs;
-    lhs = rhs = blhs = brhs = mda_point_make(r1.x, r1.y);
-    rhs.x += r1.w-1;
-    blhs.x--;
-    brhs.x += r1.w;
+    mda_rect_t r1 = mda_rect_inner(&r0);
+    mda_cell_t blank = mda_cell_make(' ', MDA_NORMAL);
 
-    FILE* f = fopen("rect.mda", "rb");
+    FILE* f = fopen("RECT.MDA", "rb");
     require_fd(f, "FAIL to open file!");
-    mda_load_rect(f, &r1);
-    mda_draw_rect(&r0, &cell);
-    for(int i = 0; i < r1.h; ++i) {
-        cell.chr++;
-        mda_plot(&lhs, &cell);
-        mda_plot(&rhs, &cell);
-        mda_plot(&blhs, &lttr);
-        mda_plot(&brhs, &lttr);
-        lhs.y++;
-        rhs.y++;
-        blhs.y++;
-        brhs.y++;
-        lttr.chr++;
-    }
-    cell.chr = ' ';
-    getchar();
-    mda_scroll_up(&r1, &cell);
-    getchar();
-    mda_scroll_down(&r1, &cell);
-
+    mda_load_rect(f, &r0);
     fclose(f);
+
+    //getchar();
+    //mda_scroll_up(&r1, &blank);
+    //getchar();
+    //mda_scroll_down(&r1, &blank);
+    char k = getchar();
+    while(k != 'q') {
+        switch(k) {
+            case 'w':
+                mda_scroll_up(&r1, &blank);
+                break;
+            case 's':
+                mda_scroll_down(&r1, &blank);
+                break;
+            case 'a':
+                mda_scroll_left(&r1, &blank);
+                break;
+        };
+        k = getchar();
+    }
 }
 
 #endif

@@ -52,6 +52,15 @@ static inline mda_rect_t mda_rect_make_from(mda_point_t* o, mda_dim_t* d) {
     return mda_rect_make(o->x, o->y, d->w, d->h);  /**< Create rect from point + dim */
 }
 
+static inline mda_rect_t mda_rect_inner(const mda_rect_t* r) {
+    mda_rect_t inner = *r;
+    inner.x++;
+    inner.y++;
+    inner.w-=2;
+    inner.h-=2;
+    return inner;
+}
+
 /**
  * @brief Check if a point lies within the rectangle.
  * @param r Pointer to the rectangle.

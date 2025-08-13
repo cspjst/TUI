@@ -1,5 +1,7 @@
 #include "mda_context.h"
 #include "mda_attributes.h"
+#include "mda_cell.h"
+#include "mda_primitives.h"
 #include "mda_rect.h"
 #include "mda_control_codes.h"
 #include "../CONTRACT/contract.h"
@@ -17,6 +19,7 @@ void mda_initialize_default_context(mda_context_t* ctx) {
     bios_get_cursor_position_and_size(&ctx->cursor, ctx->video.page);
     mda_set_bounds(ctx, 0, 0, ctx->video.columns, MDA_ROWS);
     ctx->attributes = MDA_NORMAL;
+    ctx->blank = mda_cell_make(' ', MDA_NORMAL);
     ctx->htab_size = MDA_DEFAULT_HTAB;
     ctx->vtab_size = MDA_DEFAULT_VTAB;
 }
@@ -30,8 +33,8 @@ void mda_cursor_to(mda_context_t* ctx, mda_point_t* p) {
 
 void mda_cursor_up(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
-    if (ctx->cursor.row == ctx->bounds.rect.y) {
-        mda_scroll_down(&ctx->bounds);
+    if (ctx->cursor.row == ctx->bounds.y) {
+        mda_scroll_down(&ctx->bounds, &ctx->blank);
         return;
     }
     ctx->cursor.row--;
@@ -40,8 +43,8 @@ void mda_cursor_up(mda_context_t* ctx) {
 
 void mda_cursor_down(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
-    if (ctx->cursor.row == ctx->bounds.rect.y + ctx->bounds.rect.h - 1) {
-        mda_scroll_up(&ctx->bounds);
+    if (ctx->cursor.row == ctx->bounds.y + ctx->bounds.h - 1) {
+        mda_scroll_up(&ctx->bounds, &ctx->blank);
         return;
     }
     ctx->cursor.row++;
@@ -51,8 +54,8 @@ void mda_cursor_down(mda_context_t* ctx) {
 void mda_cursor_forward(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
     ctx->cursor.column++;
-    if (ctx->cursor.column >= ctx->bounds.rect.x + ctx->bounds.rect.w) { // over shoot so carriage return
-        mda_write_CRLF(ctx);
+    if (ctx->cursor.column >= ctx->bounds.x + ctx->bounds.w) { // over shoot so carriage return
+        mda_CRLF(ctx);
         return;
     }
     bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
@@ -60,69 +63,74 @@ void mda_cursor_forward(mda_context_t* ctx) {
 
 void mda_cursor_back(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
-    if (ctx->cursor.column > ctx->bounds.rect.x) { // Move left within current line
+    if (ctx->cursor.column > ctx->bounds.x) { // Move left within current line
         ctx->cursor.column--;
     }
-    else if (ctx->cursor.row > ctx->bounds.rect.y) { // At left edge, but not at top: wrap to end of previous line
+    else if (ctx->cursor.row > ctx->bounds.y) { // At left edge, but not at top: wrap to end of previous line
         ctx->cursor.row--;
-        ctx->cursor.column = ctx->bounds.rect.x + ctx->bounds.rect.w - 1;
+        ctx->cursor.column = ctx->bounds.x + ctx->bounds.w - 1;
     }
     else { // At top-left corner: cannot go back — ring bell!
-        mda_ascii_BEL(ctx);
+        mda_BEL(ctx);
     }
     bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
 }
 
-void mda_do_ctrl_BEL(mda_context_t* ctx) {
+void mda_BEL(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
     bios_write_text_teletype_mode(ASCII_BEL, 0, ctx->video.page);
 }
 
-void mda_do_ctrl_BS(mda_context_t* ctx) {
+void mda_BS(mda_context_t* ctx) {
     mda_cursor_back(ctx);
 }
 
-void mda_do_ctrl_HT(mda_context_t* ctx) {
+void mda_HT(mda_context_t* ctx) {
     for(int i = 0; i < ctx->htab_size; ++i) {
         mda_cursor_forward(ctx);
     }
 }
 
-void mda_do_ctrl_LF(mda_context_t* ctx) {
+void mda_LF(mda_context_t* ctx) {
     mda_cursor_down(ctx);
 }
 
-void mda_do_ctrl_VT(mda_context_t* ctx) {
+void mda_VT(mda_context_t* ctx) {
     for(int i = 0; i < ctx->vtab_size; ++i){
-        mda_do_ctrl_LF(ctx);
+        mda_LF(ctx);
     }
 }
 
-void mda_do_ctrl_FF(mda_context_t* ctx) {
+void mda_FF(mda_context_t* ctx) {
     for(int i = 0; i < ctx->bounds.h; ++i){
-        mda_scroll_up(ctx->bounds);
+        mda_scroll_up(&ctx->bounds, &ctx->blank);
     }
-    ctx->cursor.row = ctx->bounds.rect.y;
-    ctx->cursor.column = ctx->bounds.rect.x;
+    ctx->cursor.row = ctx->bounds.y;
+    ctx->cursor.column = ctx->bounds.x;
     bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
 }
 
-void mda_do_ctrl_CR(mda_context_t* ctx) {
+void mda_CR(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
     ctx->cursor.column = ctx->bounds.x;
     bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
 }
 
-void mda_do_ctrl_ESC(mda_context_t* ctx) {
+void mda_ESC(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
     // set esc char mode
 }
 
 
-void mda_do_ctrl_DEL(mda_context_t* ctx) {
-    mda_do_ctrl_BS(ctx);
+void mda_DEL(mda_context_t* ctx) {
+    mda_BS(ctx);
     mda_print_char(ctx, ' ');
-    mda_do_ctrl_BS(ctx);
+    mda_BS(ctx);
+}
+
+void mda_CRLF(mda_context_t* ctx) {
+    mda_CR(ctx);
+    mda_LF(ctx);
 }
 
 void mda_print_char(mda_context_t* ctx, char chr) {
@@ -131,7 +139,45 @@ void mda_print_char(mda_context_t* ctx, char chr) {
     mda_cursor_forward(ctx);
 }
 
-void mda_print_CRLF(mda_context_t* ctx) {
-    mda_do_ctrl_CR(ctx);
-    mda_do_ctrl_LF(ctx);
+void mda_print_string(mda_context_t* ctx, char* str) {
+    require_address(ctx, "NULL context!");
+    require_address(str, "NULL string!");
+
+    char c;
+    while ((c = *str++) != '\0') {
+        if (c == '\\') {
+            c = *str++;
+            switch (c) {
+                case 'a':  // Alert/Bell
+                    mda_BEL(ctx);
+                    break;
+                case 'b':  // Backspace
+                    mda_BS(ctx);
+                    break;
+                case 't':  // Horizontal Tab
+                    mda_HT(ctx);
+                    break;
+                case 'n':  // Newline (LF)
+                    mda_LF(ctx);
+                    break;
+                case 'v':  // Vertical Tab
+                    mda_VT(ctx);
+                    break;
+                case 'f':  // Form Feed
+                    mda_FF(ctx);
+                    break;
+                case 'r':  // Carriage Return
+                    mda_CR(ctx);
+                    break;
+                case '\\': // Backslash
+                    mda_print_char(ctx, '\\');
+                    break;
+                default:  // Unknown escape
+                    break;
+            }
+        }
+        else {
+            mda_print_char(ctx, c);
+        }
+    }
 }

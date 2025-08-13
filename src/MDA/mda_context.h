@@ -33,6 +33,7 @@
 typedef struct {
     mda_rect_t bounds;           /**< Bounding rectangle for current context */
     char attributes;             /**< Current text attribute byte */
+    mda_cell_t blank;            /**< Character:Attribute pair used for blank */
     uint8_t htab_size;           /**< Horizontal tab spacing (in columns) */
     uint8_t vtab_size;           /**< Vertical tab spacing (in rows) */
     bios_video_state_t video;    /**< Saved BIOS video mode and page info */
@@ -76,21 +77,21 @@ void mda_cursor_advance(mda_context_t* ctx);  ///< Advance cursor right with wra
  * Designed to mirror classic terminal semantics on MDA/Hercules hardware.
  * @{
  */
-void mda_do_ctrl_BEL(mda_context_t* ctx);  ///< Sound bell (CRTL-G)
-void mda_do_ctrl_BS(mda_context_t* ctx);   ///< Backspace: move left, no underflow
-void mda_do_ctrl_HT(mda_context_t* ctx);   ///< Horizontal tab: advance to next HT stop
-void mda_do_ctrl_LF(mda_context_t* ctx);   ///< Line Feed: move down, scroll if needed
-void mda_do_ctrl_VT(mda_context_t* ctx);   ///< Vertical Tab: advance down by vtab_size
-void mda_do_ctrl_FF(mda_context_t* ctx);   ///< Form Feed: clear screen, home cursor
-void mda_do_ctrl_CR(mda_context_t* ctx);   ///< Carriage Return: move to start of line
-void mda_do_ctrl_ESC(mda_context_t* ctx);  ///< Escape: begin control sequence (stub)
+void mda_BEL(mda_context_t* ctx);  ///< Sound bell (CRTL-G)
+void mda_BS(mda_context_t* ctx);   ///< Backspace: move left, no underflow
+void mda_HT(mda_context_t* ctx);   ///< Horizontal tab: advance to next HT stop
+void mda_LF(mda_context_t* ctx);   ///< Line Feed: move down, scroll if needed
+void mda_VT(mda_context_t* ctx);   ///< Vertical Tab: advance down by vtab_size
+void mda_FF(mda_context_t* ctx);   ///< Form Feed: clear screen, home cursor
+void mda_CR(mda_context_t* ctx);   ///< Carriage Return: move to start of line
+void mda_ESC(mda_context_t* ctx);  ///< Escape: begin control sequence (stub)
 /**
  * @brief Handle ASCII DEL — overwrite with invisible character.
  * @details Unlike BS, DEL does not move cursor left.
  * Instead, it writes an MDA_INVISIBLE cell (attribute 0x00).
  * This matches hardware behavior on MDA/Hercules.
  */
-void mda_do_ctrl_DEL(mda_context_t* ctx);
+void mda_DEL(mda_context_t* ctx);
 ///@}
 
 
@@ -99,8 +100,8 @@ void mda_do_ctrl_DEL(mda_context_t* ctx);
  * @brief Character writing and standard line-ending sequences.
  * @{
  */
-void mda_print_char(mda_context_t* ctx, char chr);  ///< Write char with current attr
-void mda_print_CRLF(mda_context_t* ctx);            ///< Write CR + LF sequence
+void mda_CRLF(mda_context_t* ctx);
+void mda_print_char(mda_context_t* ctx, char chr);
 void mda_print_string(mda_context_t* ctx, char* str);
 ///@}
 

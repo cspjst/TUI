@@ -489,8 +489,8 @@ void mda_scroll_left(mda_rect_t* rect, mda_cell_t* blank) {
         .8086
         // 1. register setup
         mov ax, MDA_SEGMENT
-        mov es, ax          ; ES:DI *VRAM
-        lds si, rect        ; DS:SI *rect
+        mov es, ax          ; ES:DI* VRAM
+        lds si, rect        ; DS:SI* rect
         lodsb               ; AL = rect.x
         xor ah, ah          ; AX = rect.x
         mov bl, ds:[si]     ; BL = rect.y
@@ -511,24 +511,28 @@ void mda_scroll_left(mda_rect_t* rect, mda_cell_t* blank) {
         add  di, ax         ; ax = y*80 + x
         shl  di, 1          ; word offset ES:DI *VRAM (x,y)
         // 3. register setup
+        lds  si, blank      ; DS:SI* blank
+        mov  bx, ds:[si]    ; BX = blank char:attr
         mov  ax, MDA_SEGMENT
         mov  ds, ax
         mov  si, di         ; DS:SI* source = ES:DI* destination
         mov  ax, MDA_ROW_BYTES
         add  si, 2          ; DS:SI* is now 1 cell right
-        
+        dec  cx
         sub  ax, cx         ; next line offset
         sub  ax, cx         ; 160 - (2 * width)
         // 4. move successive rows left 1
-        mov  bx, cx         ; BX copy width
         cld                 ; increment direction
-NEXT:   rep  movsw          ; copy row cells left
-        mov  cx, bx         ; restore width counter
+NEXT:   push cx
+        rep  movsw          ; copy row cells left
+        pop cx
+        mov  es:[di], bx    ; blank end cell
         add  si, ax         ; next line down
         add  di, ax
         dec  dx
         jnz  NEXT           ; loop until all rows moved up 1
 
+    }
 }
 
 void mda_scroll_right(mda_rect_t* rect, mda_cell_t* blank) {
