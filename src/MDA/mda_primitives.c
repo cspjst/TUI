@@ -14,7 +14,7 @@
 #include "mda_cell.h"
 #include "mda_constants.h"
 
-mda_cell_t* mda_as_pointer(mda_point_t* point) {
+mda_cell_t* mda_as_pointer(const mda_point_t* point) {
     mda_cell_t* pcell = 0;
     mda_cell_t** ppcell = &pcell;
     __asm {
@@ -44,7 +44,7 @@ mda_cell_t* mda_as_pointer(mda_point_t* point) {
     return pcell;
 }
 
-void mda_plot(mda_point_t* point, mda_cell_t* cell) {
+void mda_plot(const mda_point_t* point, const mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
@@ -72,7 +72,7 @@ void mda_plot(mda_point_t* point, mda_cell_t* cell) {
     }
 }
 
-void mda_draw_hline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
+void mda_draw_hline(const mda_point_t* p0, const mda_point_t* p1, const mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
@@ -108,7 +108,7 @@ void mda_draw_hline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
     }
 }
 
-void mda_draw_vline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell) {
+void mda_draw_vline(const mda_point_t* p0, const mda_point_t* p1, const mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
@@ -146,7 +146,7 @@ NEXT:   mov es:[di], ax
     }
 }
 
-void mda_draw_hline_caps(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cells) {
+void mda_draw_hline_caps(const mda_point_t* p0, const mda_point_t* p1, const mda_cell_t* cells) {
     __asm {
         .8086
         // 1. register setup
@@ -187,7 +187,7 @@ ONE:    movsw               ; *ES:DI++ = *DS:SI++ (RHS end cap char)
     }
 }
 
-void mda_draw_vline_caps(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cells) {
+void mda_draw_vline_caps(const mda_point_t* p0, const mda_point_t* p1, const mda_cell_t* cells) {
     __asm {
         .8086
         // 1. register setup
@@ -235,7 +235,7 @@ ONE:    lodsw               ; AX = *DS:SI++
     }
 }
 
-void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell) {
+void mda_draw_rect(const mda_rect_t* rect, const mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
@@ -289,7 +289,7 @@ NEXT:   mov es:[di], ax     ; lhs cell
     }
 }
 
-void mda_fill_rect(mda_rect_t* rect, mda_cell_t* cell) {
+void mda_fill_rect(const mda_rect_t* rect, const mda_cell_t* cell) {
     __asm {
         .8086
         // 1. register setup
@@ -338,7 +338,7 @@ void mda_fill_rect(mda_rect_t* rect, mda_cell_t* cell) {
 
 // void mda_blit(mda_rect_t* to, mda_rect_t* from);
 
-void mda_fill_screen(mda_cell_t* cell) {
+void mda_fill_screen(const mda_cell_t* cell) {
     __asm {
         mov ax, MDA_SEGMENT
         mov es, ax          ; ES:DI *VRAM
@@ -351,18 +351,18 @@ void mda_fill_screen(mda_cell_t* cell) {
     }
 }
 
-void mda_save_screen(FILE* f) {
+void mda_save_screen(const FILE* f) {
     require_fd(f, "NULL file pointer!");
     ensure(fwrite(MDA_VRAM_PTR, sizeof(char), MDA_SCREEN_BYTES, f) == MDA_SCREEN_BYTES, "FAIL to write!");
 
 }
 
-void mda_load_screen(FILE* f) {
+void mda_load_screen(const FILE* f) {
     require_fd(f, "NULL file pointer!");
     ensure(fread(MDA_VRAM_PTR, sizeof(char), MDA_SCREEN_BYTES, f) == MDA_SCREEN_BYTES, "FAIL to read!");
 }
 
-void mda_save_rect(FILE* f, mda_rect_t* rect) {
+void mda_save_rect(const FILE* f, const mda_rect_t* rect) {
     require_fd(f, "NULL file pointer!");
     mda_cell_t* vram = mda_as_pointer(&rect->origin);
     for (int y = 0; y < rect->h; y++) {
@@ -371,7 +371,7 @@ void mda_save_rect(FILE* f, mda_rect_t* rect) {
     }
 }
 
-void mda_load_rect(FILE* f, mda_rect_t* rect) {
+void mda_load_rect(const FILE* f, const mda_rect_t* rect) {
     require_fd(f, "NULL file pointer!");
     mda_cell_t* vram = mda_as_pointer(&rect->origin);
     for (int y = 0; y < rect->h; y++) {
@@ -380,7 +380,7 @@ void mda_load_rect(FILE* f, mda_rect_t* rect) {
     }
 }
 
-void mda_scroll_up(mda_rect_t* rect, mda_cell_t* blank) {
+void mda_scroll_up(const mda_rect_t* rect, const mda_cell_t* blank) {
     __asm {
         .8086
         // 1. register setup
@@ -430,7 +430,7 @@ NEXT:   rep  movsw          ; copy row cells upwards left to right
     }
 }
 
-void mda_scroll_down(mda_rect_t* rect, mda_cell_t* blank) {
+void mda_scroll_down(const mda_rect_t* rect, const mda_cell_t* blank) {
     __asm {
         .8086
         // 1. register setup
@@ -484,7 +484,7 @@ NEXT:   rep  movsw          ; copy row cells downwards right to left
     }
 }
 
-void mda_scroll_left(mda_rect_t* rect, mda_cell_t* blank) {
+void mda_scroll_left(const mda_rect_t* rect, const mda_cell_t* blank) {
     __asm {
         .8086
         // 1. register setup
