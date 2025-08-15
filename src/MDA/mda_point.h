@@ -39,7 +39,7 @@ static inline mda_point_t mda_point_make(uint8_t x, uint8_t y) {
     return p;                /**< Construct and return a new point */
 }
 
-static inline mda_point_t mda_point_add(mda_point_t a, mda_point_t b) {
+static inline mda_point_t mda_point_add(const mda_point_t a, const mda_point_t b) {
     return mda_point_make(a.x + b.x, a.y + b.y);  /**< Add x and y components */
 }
 
