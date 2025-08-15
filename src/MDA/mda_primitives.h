@@ -23,34 +23,34 @@
  * @note All functions assume caller has clipped input coordinates.
  * @{
  */
-mda_cell_t* mda_as_pointer(mda_point_t* point);
+mda_cell_t* mda_as_pointer(const mda_point_t* point);
 
-void mda_plot(mda_point_t* point, mda_cell_t* cell);
+void mda_plot(const mda_point_t* point, const mda_cell_t* cell);
 
-void mda_draw_hline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell);
+void mda_draw_hline(const mda_point_t* p0, const mda_point_t* p1, const mda_cell_t* cell);
 
-void mda_draw_vline(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cell);
+void mda_draw_vline(const mda_point_t* p0, const mda_point_t* p1, const mda_cell_t* cell);
 
-void mda_draw_hline_caps(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cells);
+void mda_draw_hline_caps(const mda_point_t* p0, const mda_point_t* p1, const mda_cell_t* cells);
 
-void mda_draw_vline_caps(mda_point_t* p0, mda_point_t* p1, mda_cell_t* cells);
+void mda_draw_vline_caps(const mda_point_t* p0, const mda_point_t* p1, const mda_cell_t* cells);
 
-void mda_draw_rect(mda_rect_t* rect, mda_cell_t* cell);
+void mda_draw_rect(const mda_rect_t* rect, const mda_cell_t* cell);
 
-void mda_fill_rect(mda_rect_t* rect, mda_cell_t* cell);
+void mda_fill_rect(const mda_rect_t* rect, const mda_cell_t* cell);
 
-void mda_draw_border(mda_rect_t* rect, mda_cell_t* cells);
+void mda_draw_border(const mda_rect_t* rect, const mda_cell_t* cells);
 
-void mda_blit(mda_rect_t* to, mda_rect_t* from);
+void mda_blit(const mda_rect_t* to, const mda_rect_t* from);
 ///@}
 
-void mda_fill_screen(mda_cell_t* cell);
+void mda_fill_screen(const mda_cell_t* cell);
 
-void mda_load_screen(FILE* f);
+void mda_load_screen(const FILE* f);
 
-void mda_save_screen(FILE* f);
+void mda_save_screen(const FILE* f);
 
-static inline void mda_clear_rect(mda_rect_t* rect) {
+static inline void mda_clear_rect(const mda_rect_t* rect) {
     mda_cell_t cell = mda_cell_make('\0', MDA_NORMAL);
     mda_fill_rect(rect, &cell);
 }
@@ -67,7 +67,7 @@ static inline void mda_clear_screen(void) {
  * @note Format: consecutive cell_t pairs (char + attr) in row-major order.
  * @note Caller must ensure file is opened in binary mode.
  */
-void mda_save_rect(FILE* f, mda_rect_t* rect);
+void mda_save_rect(const FILE* f, const mda_rect_t* rect);
 
 /**
  * @brief Load contents from a binary stream into a rectangle.
@@ -77,7 +77,7 @@ void mda_save_rect(FILE* f, mda_rect_t* rect);
  * @note Caller must ensure stream contains valid data of correct size.
  * @warning No bounds checking on input — use with trusted sources.
  */
-void mda_load_rect(FILE* f, mda_rect_t* rect);
+void mda_load_rect(const FILE* f, const mda_rect_t* rect);
 
 
 /**
@@ -86,13 +86,13 @@ void mda_load_rect(FILE* f, mda_rect_t* rect);
  * Used for display management when bounds are exceeded.
  * @{
  */
-void mda_scroll_up(mda_rect_t* rect, mda_cell_t* blank);     ///< Scroll content up by one line
+void mda_scroll_up(const mda_rect_t* rect, const mda_cell_t* blank);     ///< Scroll content up by one line
 
-void mda_scroll_down(mda_rect_t* rect, mda_cell_t* blank);   ///< Scroll content down by one line
+void mda_scroll_down(const mda_rect_t* rect, const mda_cell_t* blank);   ///< Scroll content down by one line
 
-void mda_scroll_left(mda_rect_t* rect, mda_cell_t* blank);   ///< Scroll content left by one column
+void mda_scroll_left(const mda_rect_t* rect, const mda_cell_t* blank);   ///< Scroll content left by one column
 
-void mda_scroll_right(mda_rect_t* rect, mda_cell_t* blank);  ///< Scroll content right by one column
+void mda_scroll_right(const mda_rect_t* rect, const mda_cell_t* blank);  ///< Scroll content right by one column
 ///@}
 
 
