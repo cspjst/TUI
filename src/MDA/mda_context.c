@@ -76,32 +76,32 @@ void mda_cursor_back(mda_context_t* ctx) {
     bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
 }
 
-void mda_BEL(mda_context_t* ctx) {
+void mda_BEL(const mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
     bios_write_text_teletype_mode(ASCII_BEL, 0, ctx->video.page);
 }
 
-void mda_BS(mda_context_t* ctx) {
+void mda_BS(const mda_context_t* ctx) {
     mda_cursor_back(ctx);
 }
 
-void mda_HT(mda_context_t* ctx) {
+void mda_HT(const mda_context_t* ctx) {
     for(int i = 0; i < ctx->htab_size; ++i) {
         mda_cursor_forward(ctx);
     }
 }
 
-void mda_LF(mda_context_t* ctx) {
+void mda_LF(const mda_context_t* ctx) {
     mda_cursor_down(ctx);
 }
 
-void mda_VT(mda_context_t* ctx) {
+void mda_VT(const mda_context_t* ctx) {
     for(int i = 0; i < ctx->vtab_size; ++i){
         mda_LF(ctx);
     }
 }
 
-void mda_FF(mda_context_t* ctx) {
+void mda_FF(const mda_context_t* ctx) {
     for(int i = 0; i < ctx->bounds.h; ++i){
         mda_scroll_up(&ctx->bounds, &ctx->blank);
     }
@@ -110,36 +110,36 @@ void mda_FF(mda_context_t* ctx) {
     bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
 }
 
-void mda_CR(mda_context_t* ctx) {
+void mda_CR(const mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
     ctx->cursor.column = ctx->bounds.x;
     bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
 }
 
-void mda_ESC(mda_context_t* ctx) {
+void mda_ESC(const mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
     // set esc char mode
 }
 
 
-void mda_DEL(mda_context_t* ctx) {
+void mda_DELconst (mda_context_t* ctx) {
     mda_BS(ctx);
     mda_print_char(ctx, ' ');
     mda_BS(ctx);
 }
 
-void mda_CRLF(mda_context_t* ctx) {
+void mda_CRLF(const mda_context_t* ctx) {
     mda_CR(ctx);
     mda_LF(ctx);
 }
 
-void mda_print_char(mda_context_t* ctx, char chr) {
+void mda_print_char(const mda_context_t* ctx, char chr) {
     require_address(ctx, "NULL context!");
     bios_write_character_and_attribute_at_cursor(chr, ctx->attributes, 1, ctx->video.page);
     mda_cursor_forward(ctx);
 }
 
-void mda_print_string(mda_context_t* ctx, char* str) {
+void mda_print_string(const mda_context_t* ctx, char* str) {
     require_address(ctx, "NULL context!");
     require_address(str, "NULL string!");
 
