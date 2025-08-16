@@ -101,7 +101,7 @@ void mda_VT(const mda_context_t* ctx) {
     }
 }
 
-void mda_FF(const mda_context_t* ctx) {
+void mda_FF(mda_context_t* ctx) {
     for(int i = 0; i < ctx->bounds.h; ++i){
         mda_scroll_up(&ctx->bounds, &ctx->blank);
     }
@@ -110,7 +110,7 @@ void mda_FF(const mda_context_t* ctx) {
     bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);
 }
 
-void mda_CR(const mda_context_t* ctx) {
+void mda_CR(mda_context_t* ctx) {
     require_address(ctx, "NULL context!");
     ctx->cursor.column = ctx->bounds.x;
     bios_set_cursor_position(ctx->cursor.column, ctx->cursor.row, ctx->video.page);

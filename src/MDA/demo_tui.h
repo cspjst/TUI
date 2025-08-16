@@ -191,24 +191,16 @@ void demo_scroll (mda_context_t *ctx) {
     mda_rect_t r0 = mda_rect_make(9, 14, 37, 9);
     mda_rect_t r1 = mda_rect_inner(&r0);
     mda_cell_t blank = mda_cell_make(' ', MDA_NORMAL);
+    mda_cell_t test = mda_cell_make('*', MDA_NORMAL);
 
+    mda_fill_screen(&test);
     FILE* f = fopen("RECT.MDA", "rb");
     require_fd(f, "FAIL to open file!");
     mda_load_rect(f, &r0);
     fclose(f);
 
-    //getchar();
-    //mda_scroll_up(&r1, &blank);
-    //getchar();
-    for(int i = 0; i < 10; ++i) {
-        getchar();
-        mda_scroll_down(&r1, &blank);
-        printf("(%i,%i,%i,%i)", r1.x, r1.y,r1.w,r1.h);
-    }
-    /*
     char k = getchar();
     while(k != 'q') {
-        printf("(%i,%i,%i,%i)", r1.x, r1.y,r1.w,r1.h);
         switch(k) {
             case 'w':
                 mda_scroll_up(&r1, &blank);
@@ -222,7 +214,6 @@ void demo_scroll (mda_context_t *ctx) {
         };
         k = getchar();
     }
-    */
 }
 
 #endif

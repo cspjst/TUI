@@ -82,8 +82,8 @@ void mda_BS(const mda_context_t* ctx);   ///< Backspace: move left, no underflow
 void mda_HT(const mda_context_t* ctx);   ///< Horizontal tab: advance to next HT stop
 void mda_LF(const mda_context_t* ctx);   ///< Line Feed: move down, scroll if needed
 void mda_VT(const mda_context_t* ctx);   ///< Vertical Tab: advance down by vtab_size
-void mda_FF(const mda_context_t* ctx);   ///< Form Feed: clear screen, home cursor
-void mda_CR(const mda_context_t* ctx);   ///< Carriage Return: move to start of line
+void mda_FF(mda_context_t* ctx);   ///< Form Feed: clear screen, home cursor
+void mda_CR(mda_context_t* ctx);   ///< Carriage Return: move to start of line
 void mda_ESC(const mda_context_t* ctx);  ///< Escape: begin control sequence (stub)
 /**
  * @brief Handle ASCII DEL — overwrite with invisible character.
