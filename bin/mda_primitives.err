@@ -1,0 +1,16 @@
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(644): Warning! E1179: Parameter 4, type qualifier mismatch
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(644): Note! I2003: source conversion type is 'struct __iobuf const *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(644): Note! I2004: target conversion type is 'struct __iobuf *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(644): Note! I2002: 'fwrite' defined in: /opt/watcom/h/stdio.h(364)
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(649): Warning! E1179: Parameter 4, type qualifier mismatch
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(649): Note! I2003: source conversion type is 'struct __iobuf const *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(649): Note! I2004: target conversion type is 'struct __iobuf *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(649): Note! I2002: 'fread' defined in: /opt/watcom/h/stdio.h(358)
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(656): Warning! E1179: Parameter 4, type qualifier mismatch
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(656): Note! I2003: source conversion type is 'struct __iobuf const *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(656): Note! I2004: target conversion type is 'struct __iobuf *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(656): Note! I2002: 'fwrite' defined in: /opt/watcom/h/stdio.h(364)
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(665): Warning! E1179: Parameter 4, type qualifier mismatch
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(665): Note! I2003: source conversion type is 'struct __iobuf const *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(665): Note! I2004: target conversion type is 'struct __iobuf *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_primitives.c(665): Note! I2002: 'fread' defined in: /opt/watcom/h/stdio.h(358)

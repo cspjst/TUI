@@ -1,0 +1,28 @@
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(85): Warning! E1179: Parameter 1, type qualifier mismatch
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(85): Note! I2003: source conversion type is 'mda_context_t const *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(85): Note! I2004: target conversion type is 'mda_context_t *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(85): Note! I2002: 'mda_cursor_back' defined in: /Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(64)
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(90): Warning! E1179: Parameter 1, type qualifier mismatch
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(90): Note! I2003: source conversion type is 'mda_context_t const *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(90): Note! I2004: target conversion type is 'mda_context_t *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(90): Note! I2002: 'mda_cursor_forward' defined in: /Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(54)
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(95): Warning! E1179: Parameter 1, type qualifier mismatch
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(95): Note! I2003: source conversion type is 'mda_context_t const *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(95): Note! I2004: target conversion type is 'mda_context_t *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(95): Note! I2002: 'mda_cursor_down' defined in: /Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(44)
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(132): Warning! E1179: Parameter 1, type qualifier mismatch
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(132): Note! I2003: source conversion type is 'mda_context_t const *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(132): Note! I2004: target conversion type is 'mda_context_t *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(132): Note! I2002: 'mda_CR' defined in: /Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(113)
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(139): Warning! E1179: Parameter 1, type qualifier mismatch
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(139): Note! I2003: source conversion type is 'mda_context_t const *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(139): Note! I2004: target conversion type is 'mda_context_t *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(139): Note! I2002: 'mda_cursor_forward' defined in: /Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(54)
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(167): Warning! E1179: Parameter 1, type qualifier mismatch
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(167): Note! I2003: source conversion type is 'mda_context_t const *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(167): Note! I2004: target conversion type is 'mda_context_t *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(167): Note! I2002: 'mda_FF' defined in: /Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(104)
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(170): Warning! E1179: Parameter 1, type qualifier mismatch
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(170): Note! I2003: source conversion type is 'mda_context_t const *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(170): Note! I2004: target conversion type is 'mda_context_t *'
+/Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(170): Note! I2002: 'mda_CR' defined in: /Users/jeremythornton/dosbox/cspjst/TUI/src/MDA/mda_context.c(113)
