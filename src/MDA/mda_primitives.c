@@ -455,7 +455,6 @@ void mda_scroll_down(const mda_rect_t* rect, const mda_cell_t* blank) {
         .8086
         // 1. register & flag setup
         pushf
-        cld                 ; inc str ops
         mov ax, MDA_SEGMENT
         mov es, ax          ; ES:DI *VRAM
         lds si, rect        ; DS:SI *rect
@@ -512,7 +511,6 @@ void mda_scroll_left(const mda_rect_t* rect, const mda_cell_t* blank) {
         .8086
         // 1. register & flag setup
         pushf
-        cld                 ; inc str ops
         mov ax, MDA_SEGMENT
         mov es, ax          ; ES:DI* VRAM
         lds si, rect        ; DS:SI* rect
@@ -547,15 +545,17 @@ void mda_scroll_left(const mda_rect_t* rect, const mda_cell_t* blank) {
         sub  ax, cx         ; next line offset
         sub  ax, cx         ; 160 - (2 * width)
         // 4. move successive rows left 1
-        cld                 ; increment direction
-NEXT:   push cx
-        rep  movsw          ; copy row cells left
-        pop cx
+        cld
+        push bp             ; preserve BP it used to recover the return address for this function
+        mov bp, cx          ; BP copy of width
+NEXT:   rep  movsw          ; copy row cells left
+        mov  cx, bp
         mov  es:[di], bx    ; blank end cell
         add  si, ax         ; next line down
         add  di, ax
         dec  dx
         jnz  NEXT           ; loop until all rows moved up 1
+        pop bp              ; restore BP
         popf                ; restore flags
     }
 }
@@ -602,19 +602,18 @@ void mda_scroll_right(const mda_rect_t* rect, const mda_cell_t* blank) {
         dec  cx
         sub  ax, cx         ; next line offset
         sub  ax, cx         ; 160 - (2 * width)
-        // 4. move successive rows down 1
-        dec  dx             ; height -1
-        mov  bx, cx         ; BX copy width
+        // 4. move successive rows right 1
         std                 ; decrement direction
-NEXT:   rep  movsw          ; copy row cells downwards right to left
-        mov  cx, bx         ; restore width counter
-        sub  si, ax         ; next line up
+        push bp             ; preserve BP it used to recover the return address for this function
+        mov bp, cx          ; BP copy of width
+NEXT:   rep  movsw          ; copy row cells right
+        mov  cx, bp         ; restore CX
+        mov  es:[di], bx    ; blank end cell
+        sub  si, ax         ; next line down
         sub  di, ax
         dec  dx
         jnz  NEXT           ; loop until all rows moved up 1
-        lds  si, blank
-        lodsw               ; AX = blank attrib:char
-        rep  stosw          ; top blank line
+        pop bp              ; restore BP
         popf                ; restore flags
     }
 }

@@ -211,6 +211,9 @@ void demo_scroll (mda_context_t *ctx) {
             case 'a':
                 mda_scroll_left(&r1, &blank);
                 break;
+            case 'd':
+                mda_scroll_right(&r1, &blank);
+                break;
         };
         k = getchar();
     }
