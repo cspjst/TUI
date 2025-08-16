@@ -200,9 +200,15 @@ void demo_scroll (mda_context_t *ctx) {
     //getchar();
     //mda_scroll_up(&r1, &blank);
     //getchar();
-    //mda_scroll_down(&r1, &blank);
+    for(int i = 0; i < 10; ++i) {
+        getchar();
+        mda_scroll_down(&r1, &blank);
+        printf("(%i,%i,%i,%i)", r1.x, r1.y,r1.w,r1.h);
+    }
+    /*
     char k = getchar();
     while(k != 'q') {
+        printf("(%i,%i,%i,%i)", r1.x, r1.y,r1.w,r1.h);
         switch(k) {
             case 'w':
                 mda_scroll_up(&r1, &blank);
@@ -216,6 +222,7 @@ void demo_scroll (mda_context_t *ctx) {
         };
         k = getchar();
     }
+    */
 }
 
 #endif
