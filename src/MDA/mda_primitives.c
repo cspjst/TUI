@@ -561,5 +561,60 @@ NEXT:   push cx
 }
 
 void mda_scroll_right(const mda_rect_t* rect, const mda_cell_t* blank) {
-
+    __asm {
+        .8086
+        // 1. register & flag setup
+        pushf
+        mov ax, MDA_SEGMENT
+        mov es, ax          ; ES:DI *VRAM
+        lds si, rect        ; DS:SI *rect
+        lodsb               ; AL = rect.x
+        xor ah, ah          ; AX = rect.x
+        mov bl, ds:[si]     ; BL = rect.y
+        xor bh, bh          ; BX = rect.y
+        mov cl, ds:[si+1]   ; CL = rect.w
+        xor ch, ch          ; CX = width
+        mov dl, ds:[si+2]   ; DL = rect.h
+        xor dh, dh          ; DX = height
+        add ax, cx          ; move x to far right
+        dec ax              ; AX = rect.x + rect.w - 1
+        add bx, dx          ; move y to bottom
+        dec bx              ; BX = rect.y + rect.h - 1
+        mov di, bx          ; DI copy rect.y
+        // 2. DI = y * 80
+        shl  di, 1          ; y * 4
+        shl  di, 1
+        add  di, bx         ; y * 5
+        shl  di, 1          ; y * 5 * 16
+        shl  di, 1
+        shl  di, 1
+        shl  di, 1
+        add  di, ax         ; ax = y*80 + x
+        shl  di, 1          ; word offset ES:DI *VRAM (x,y)
+        // 3. register setup
+        lds  si, blank      ; DS:SI* blank
+        mov  bx, ds:[si]    ; BX = blank char:attr
+        mov  ax, MDA_SEGMENT
+        mov  ds, ax
+        mov  si, di         ; DS:SI* source = ES:DI* destination
+        mov  ax, MDA_ROW_BYTES
+        sub  si, 2          ; DS:SI* is now 1 cell left
+        dec  cx
+        sub  ax, cx         ; next line offset
+        sub  ax, cx         ; 160 - (2 * width)
+        // 4. move successive rows down 1
+        dec  dx             ; height -1
+        mov  bx, cx         ; BX copy width
+        std                 ; decrement direction
+NEXT:   rep  movsw          ; copy row cells downwards right to left
+        mov  cx, bx         ; restore width counter
+        sub  si, ax         ; next line up
+        sub  di, ax
+        dec  dx
+        jnz  NEXT           ; loop until all rows moved up 1
+        lds  si, blank
+        lodsw               ; AX = blank attrib:char
+        rep  stosw          ; top blank line
+        popf                ; restore flags
+    }
 }
